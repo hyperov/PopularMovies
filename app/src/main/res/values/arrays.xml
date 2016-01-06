@@ -3,9 +3,13 @@
     <string-array name="pref_movies_list_entries">
         <item>@string/pref_movies_label_popular</item>
         <item>@string/pref_movies_label_rating</item>
+        <item>@string/pref_movies_label_fav</item>
     </string-array>
     <string-array name="pref_movies_list_values">
         <item>@string/pref_movies_label_popular_entry</item>
         <item>@string/pref_movies_label_rating_entry</item>
+        <item>@string/pref_movies_label_fav_entry</item>
     </string-array>
 </resources>
+
+

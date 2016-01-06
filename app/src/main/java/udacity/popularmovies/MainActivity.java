@@ -201,9 +201,10 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray results = object.getJSONArray("results");
                 for (int i = 0; i < results.length(); i++) {
                     JSONObject movieObject = results.getJSONObject(i);
+                    ApiCalls.API_CALL_MOVIE_ID=movieObject.getString("id");
                     Movie movie = new Movie(movieObject.getString("title"), movieObject.getString("poster_path"),
                             movieObject.getString("overview"), movieObject.getString("vote_average"),
-                            movieObject.getString("release_date"), movieObject.getString("id"));
+                            movieObject.getString("release_date"), ApiCalls.API_CALL_MOVIE_ID);
 
 
                     movieList.add(movie);
