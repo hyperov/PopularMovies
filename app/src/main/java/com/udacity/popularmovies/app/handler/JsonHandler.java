@@ -1,4 +1,4 @@
-package json.handler;
+package com.udacity.popularmovies.app.handler;
 
 import android.util.Log;
 

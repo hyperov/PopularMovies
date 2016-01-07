@@ -1,4 +1,4 @@
-package pojo;
+package com.udacity.popularmovies.app.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -109,8 +109,8 @@ public class Movie implements Parcelable {
 
     }
 
-    public static final Parcelable.Creator<Movie> CREATOR
-            = new Parcelable.Creator<Movie>() {
+    public static final Creator<Movie> CREATOR
+            = new Creator<Movie>() {
 
         public Movie createFromParcel(Parcel in) {
             return new Movie(in);

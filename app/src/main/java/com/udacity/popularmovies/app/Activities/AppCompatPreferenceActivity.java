@@ -1,4 +1,4 @@
-package udacity.popularmovies;
+package com.udacity.popularmovies.app.Activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

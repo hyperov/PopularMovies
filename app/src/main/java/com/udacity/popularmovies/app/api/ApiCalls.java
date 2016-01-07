@@ -1,10 +1,11 @@
-package movies.api;
+package com.udacity.popularmovies.app.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import udacity.popularmovies.R;
+import com.udacity.popularmovies.app.R;
+
 
 /**
  * Created by DELL I7 on 10/13/2015.
@@ -29,16 +30,15 @@ public class ApiCalls {
 
     //use it for api call for reviews and trailers
     public static String API_CALL_MOVIE_ID;
-    public static final String BASE_MOVIES_REVIEWS="https://api.themoviedb.org/3/movie/";
+    public static final String BASE_TRAILERS_REVIEWS = "https://api.themoviedb.org/3/movie/";
 
     //json string= key
-    public static final String API_CALL_TRAILERS = BASE_MOVIES_REVIEWS + API_CALL_MOVIE_ID +
+    public static final String API_CALL_TRAILERS = BASE_TRAILERS_REVIEWS + API_CALL_MOVIE_ID +
             "/videos?api_key=" + API_KEY;
 
-    //json string=
-    public static final String API_CALL_REVIEWS = BASE_MOVIES_REVIEWS + API_CALL_MOVIE_ID +
+    //json string=author,content
+    public static final String API_CALL_REVIEWS = BASE_TRAILERS_REVIEWS + API_CALL_MOVIE_ID +
             "/reviews?api_key=" + API_KEY;
-
 
 
     public static String getMovies(Context context) {
@@ -47,7 +47,10 @@ public class ApiCalls {
         String order = pref.getString(context.getString(R.string.pref_movies_key),
                 context.getString(R.string.pref_movies_label_popular_entry));
 
-        return BASE_API_CALL + order;
+//        if (order != context.getString(R.string.pref_movies_label_fav))
+            return BASE_API_CALL + order;
+
+
     }
 
 

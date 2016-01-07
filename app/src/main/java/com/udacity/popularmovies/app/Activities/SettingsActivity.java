@@ -1,4 +1,4 @@
-package udacity.popularmovies;
+package com.udacity.popularmovies.app.Activities;
 
 
 import android.annotation.TargetApi;
@@ -20,6 +20,8 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+
+import com.udacity.popularmovies.app.R;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

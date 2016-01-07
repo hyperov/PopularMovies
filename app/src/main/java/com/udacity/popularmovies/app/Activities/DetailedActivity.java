@@ -1,4 +1,4 @@
-package udacity.popularmovies;
+package com.udacity.popularmovies.app.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,8 +7,9 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import movies.api.ApiCalls;
-import pojo.Movie;
+import com.udacity.popularmovies.app.R;
+import com.udacity.popularmovies.app.api.ApiCalls;
+import com.udacity.popularmovies.app.pojo.Movie;
 
 public class DetailedActivity extends AppCompatActivity {
 

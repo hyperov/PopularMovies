@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "udacity.popularmovies"
+        applicationId "com.udacity.popularmovies.app"
         minSdkVersion 14
         targetSdkVersion 23
         versionCode 1

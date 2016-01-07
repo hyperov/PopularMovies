@@ -1,4 +1,4 @@
-package udacity.popularmovies;
+package com.udacity.popularmovies.app.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,16 +19,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.popularmovies.app.R;
+import com.udacity.popularmovies.app.api.ApiCalls;
+import com.udacity.popularmovies.app.handler.JsonHandler;
+import com.udacity.popularmovies.app.pojo.Movie;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-
-import json.handler.JsonHandler;
-import movies.api.ApiCalls;
-import pojo.Movie;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,8 +50,13 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_SHORT)
+                        .setAction("Action", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(MainActivity.this, "so what is this", Toast.LENGTH_SHORT).show();
+                            }
+                        }).show();
             }
         });
 
@@ -122,18 +127,18 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"text",Toast.LENGTH_SHORT).show();
-                    Movie m1 = movieList.get(getPosition());
+                Toast.makeText(getApplicationContext(), "text", Toast.LENGTH_SHORT).show();
+                Movie m1 = movieList.get(getPosition());
 
                 /*Parcel parcel=Parcel.obtain();
                 parcel.writeParcelable(m1,1);*/
 
-                Bundle bundle=new Bundle();
-                bundle.putParcelable("pojo.Movie",m1);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("pojo.Movie", m1);
 
-                    Intent detail = new Intent(getApplicationContext(), DetailedActivity.class);
-                    detail.putExtras(bundle);
-                    startActivity(detail);
+                Intent detail = new Intent(getApplicationContext(), DetailedActivity.class);
+                detail.putExtras(bundle);
+                startActivity(detail);
 
 
             }
@@ -155,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
         public void onBindViewHolder(PersonViewHolder personViewHolder, int i) {
 
             Picasso.with(context).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + posters.get(i)).into(personViewHolder.listItem);
+            Picasso.with(context).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movies.get(i).getImg()).into(personViewHolder.listItem);
+
             // personViewHolder.listItem.setImageResource(R.mipmap.ic_launcher);
 
 
@@ -201,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray results = object.getJSONArray("results");
                 for (int i = 0; i < results.length(); i++) {
                     JSONObject movieObject = results.getJSONObject(i);
-                    ApiCalls.API_CALL_MOVIE_ID=movieObject.getString("id");
+                    ApiCalls.API_CALL_MOVIE_ID = movieObject.getString("id");
                     Movie movie = new Movie(movieObject.getString("title"), movieObject.getString("poster_path"),
                             movieObject.getString("overview"), movieObject.getString("vote_average"),
                             movieObject.getString("release_date"), ApiCalls.API_CALL_MOVIE_ID);
