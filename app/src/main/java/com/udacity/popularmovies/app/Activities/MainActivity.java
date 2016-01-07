@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     MovieAdapter adapter;
-    ArrayList<String> movieArrayList;
     ArrayList<Movie> movieList;
 
     @Override
@@ -74,9 +73,10 @@ public class MainActivity extends AppCompatActivity {
                     return 1;
             }
         });
-        movieArrayList = new ArrayList<String>();
+
         movieList = new ArrayList<Movie>();
-        adapter = new MovieAdapter(movieArrayList, movieList, this);
+        ;
+        adapter = new MovieAdapter(movieList, this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         new Connection().execute(ApiCalls.getMovies(this));
@@ -101,13 +101,13 @@ public class MainActivity extends AppCompatActivity {
     public class MovieAdapter extends
             RecyclerView.Adapter<MovieAdapter.PersonViewHolder> {
 
-        ArrayList<String> posters;
+
         ArrayList<Movie> movies;
         private Context context;
 
-        public MovieAdapter(ArrayList<String> posters, ArrayList<Movie> movies,
+        public MovieAdapter(ArrayList<Movie> movies,
                             Context context) {
-            this.posters = posters;
+
             this.context = context;
             this.movies = movies;
         }
@@ -153,14 +153,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             // TODO Auto-generated method stub
-            return posters.size();
+            return movies.size();
         }
 
         @Override
         public void onBindViewHolder(PersonViewHolder personViewHolder, int i) {
 
-            Picasso.with(context).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + posters.get(i)).into(personViewHolder.listItem);
-            Picasso.with(context).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movies.get(i).getImg()).into(personViewHolder.listItem);
+
+            Picasso.with(context).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movies.get(i).getImg())
+                    .into(personViewHolder.listItem);
 
             // personViewHolder.listItem.setImageResource(R.mipmap.ic_launcher);
 
@@ -194,13 +195,12 @@ public class MainActivity extends AppCompatActivity {
     public class Connection extends AsyncTask<String, Void, String> {
 
         ArrayList<Movie> movies;
-        ArrayList<String> moviesImg;
 
 
         @Override
         protected String doInBackground(String... params) {
             movies = new ArrayList<Movie>();
-            moviesImg = new ArrayList<String>();
+
             JsonHandler handler = new JsonHandler();
             String jsonText = handler.getJsonString(params[0]);
             try {
@@ -212,12 +212,7 @@ public class MainActivity extends AppCompatActivity {
                     Movie movie = new Movie(movieObject.getString("title"), movieObject.getString("poster_path"),
                             movieObject.getString("overview"), movieObject.getString("vote_average"),
                             movieObject.getString("release_date"), ApiCalls.API_CALL_MOVIE_ID);
-
-
                     movieList.add(movie);
-
-                    moviesImg.add(movieObject.getString("poster_path"));
-
 
                 }
             } catch (JSONException e) {
@@ -230,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            adapter = new MovieAdapter(moviesImg, movieList, getApplicationContext());
+            adapter = new MovieAdapter(movieList, getApplicationContext());
             recyclerView.setAdapter(adapter);
         }
     }
