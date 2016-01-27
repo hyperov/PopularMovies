@@ -227,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(s);
             adapter = new MovieAdapter(movieList, getApplicationContext());
             recyclerView.setAdapter(adapter);
+
         }
     }
 

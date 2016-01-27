@@ -73,4 +73,6 @@
     <string name="pref_movies_label_rating_entry">vote_average.desc</string>
     <string name="pref_movies_label_fav">Favourites</string>
     <string name="pref_movies_label_fav_entry">Favourites</string>
+    <string name="sync_account_type">popularmovies.app</string>
+    <string name="content_authority">com.udacity.popularmovies.app</string>
 </resources>
