@@ -30,6 +30,7 @@ public class ApiCalls {
 
     //use it for api call for reviews and trailers
     public static String API_CALL_MOVIE_ID;
+
     public static final String BASE_TRAILERS_REVIEWS = "https://api.themoviedb.org/3/movie/";
 
     //json string= key
@@ -47,9 +48,11 @@ public class ApiCalls {
         String order = pref.getString(context.getString(R.string.pref_movies_key),
                 context.getString(R.string.pref_movies_label_popular_entry));
 
-//        if (order != context.getString(R.string.pref_movies_label_fav))
+        if (order != context.getString(R.string.pref_movies_label_fav))
             return BASE_API_CALL + order;
 
+        //setting
+        return null;
 
     }
 

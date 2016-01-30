@@ -62,7 +62,7 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="release">Release Date:</string>
     <string name="rating">Rating:</string>
-    <string name="plot">Plot :</string>
+    <string name="plot">Plot </string>
 
     <!--movies strings-->
     <string name="pref_movies_label">Movies in order</string>
@@ -75,4 +75,7 @@
     <string name="pref_movies_label_fav_entry">Favourites</string>
     <string name="sync_account_type">popularmovies.app</string>
     <string name="content_authority">com.udacity.popularmovies.app</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
