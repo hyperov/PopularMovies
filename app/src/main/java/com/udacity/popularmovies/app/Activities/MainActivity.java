@@ -1,6 +1,7 @@
 package com.udacity.popularmovies.app.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.udacity.popularmovies.app.R;
+import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.sync.PopularMoviesSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements MainFragment.Callback {
@@ -21,11 +23,15 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
 
     private boolean mTwoPane;
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    SharedPreferences pref;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //shared pref = settings
+        ApiCalls.MOVIE_ORDER = ApiCalls.getSettings(this);
 
         if (findViewById(R.id.movies_detail_container) != null) {
             // The detail container view will be present only in the large-screen layouts
@@ -85,6 +91,25 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     @Override
     protected void onResume() {
         super.onResume();
+
+
+        String order = ApiCalls.getSettings(this);
+        // update if setting changes
+        if (order != null && !order.equals(ApiCalls.MOVIE_ORDER)) {
+
+            MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
+            // update the location in our second pane using the fragment manager
+            if (mainFragment != null) {
+                moviesSyncAdapter.syncImmediately(this);
+                mainFragment.restartCursorLoader();
+            }
+            DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+            // update the location in our second pane using the fragment manager
+            if (detailFragment != null) {
+                detailFragment.restartCursorLoader();
+            }
+            ApiCalls.MOVIE_ORDER = order;
+        }
     }
 
     @Override

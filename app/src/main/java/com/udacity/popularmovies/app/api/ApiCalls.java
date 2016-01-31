@@ -41,19 +41,24 @@ public class ApiCalls {
     public static final String API_CALL_REVIEWS = BASE_TRAILERS_REVIEWS + API_CALL_MOVIE_ID +
             "/reviews?api_key=" + API_KEY;
 
+    //settings string =order of movies
+    public static String MOVIE_ORDER;
 
     public static String getMovies(Context context) {
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        String order = pref.getString(context.getString(R.string.pref_movies_key),
-                context.getString(R.string.pref_movies_label_popular_entry));
-
-        if (order != context.getString(R.string.pref_movies_label_fav))
-            return BASE_API_CALL + order;
+        if (MOVIE_ORDER != context.getString(R.string.pref_movies_label_fav))
+            return BASE_API_CALL + MOVIE_ORDER;
 
         //setting
         return null;
 
+    }
+
+    public static String getSettings(Context context) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        String order = pref.getString(context.getString(R.string.pref_movies_key),
+                context.getString(R.string.pref_movies_label_popular_entry));
+        return order;
     }
 
 
