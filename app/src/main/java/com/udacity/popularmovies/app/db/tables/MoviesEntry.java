@@ -9,10 +9,10 @@ import ckm.simple.sql_provider.annotation.SimpleSQLTable;
 @SimpleSQLTable(table = "movies", provider = "PopularProvider")
 public class MoviesEntry {
 
-    public MoviesEntry(String _id, String column_movie_id, String column_movie_name, String column_poster,
+    public MoviesEntry( String column_movie_id, String column_movie_name, String column_poster,
                        String column_plot, String column_user_rating,
                        String column_release_date, String column_favourite) {
-        this._id = _id;
+      //  this._id = _id;
         this.column_movie_id = column_movie_id;
         this.column_movie_name = column_movie_name;
         this.column_poster = column_poster;
@@ -26,10 +26,9 @@ public class MoviesEntry {
     public MoviesEntry() {
     }
 
-    @SimpleSQLColumn(value = "_id", primary = true)
-    public String _id;
+    @SimpleSQLColumn(value = "_id", primary = true,autoincrement = true)
+    public int _id;
     // Table name
-//        public  String TABLE_NAME = "movies";
     @SimpleSQLColumn("movie_id")
     public String column_movie_id;
 

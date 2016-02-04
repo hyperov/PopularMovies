@@ -7,20 +7,20 @@ import android.util.Log;
 
 public class PopularMoviesSyncService extends Service {
     private static final Object sSyncAdapterLock = new Object();
-    private static PopularMoviesSyncAdapter sSunshineSyncAdapter = null;
+    private static PopularMoviesSyncAdapter popularMoviesSyncAdapter = null;
 
     @Override
     public void onCreate() {
-        Log.d("SunshineSyncService", "onCreate - SunshineSyncService");
+        Log.d("MoviesSyncService", "onCreate - MoviesSyncService");
         synchronized (sSyncAdapterLock) {
-            if (sSunshineSyncAdapter == null) {
-                sSunshineSyncAdapter = new PopularMoviesSyncAdapter(getApplicationContext(), true);
+            if (popularMoviesSyncAdapter == null) {
+                popularMoviesSyncAdapter = new PopularMoviesSyncAdapter(getApplicationContext(), true);
             }
         }
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return sSunshineSyncAdapter.getSyncAdapterBinder();
+        return popularMoviesSyncAdapter.getSyncAdapterBinder();
     }
 }

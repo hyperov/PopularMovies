@@ -1,9 +1,7 @@
 package com.udacity.popularmovies.app.Activities;
 
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -22,6 +20,8 @@ import com.udacity.popularmovies.app.adapter.MyGridCursorAdapter;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
 import com.udacity.popularmovies.app.db.tables.MoviesTable;
 
+import java.util.List;
+
 /**
  * Created by DELL I7 on 1/28/2016.
  */
@@ -36,7 +36,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     //id for sursor loader
     public static final int MOVIES_LOADER = 0;
     //adapter to use cursor adapter with recyclerView
-    private MyGridCursorAdapter moviesAdapter;
+    public MyGridCursorAdapter moviesAdapter;
 
 
     @Override
@@ -44,13 +44,14 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    @Nullable
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        moviesAdapter = new MyGridCursorAdapter(getActivity(), null);
 
-        moviesAdapter = new MyGridCursorAdapter(getContext(), null);
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -63,7 +64,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         });
 //        RecyclerView.ItemDecoration itemDecoration=new
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(moviesAdapter);
@@ -77,33 +78,40 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(MOVIES_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
     public void restartCursorLoader() {
-        getLoaderManager().restartLoader(MainFragment.MOVIES_LOADER, null, this);
+        getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
     }
 
     public interface Callback {
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(Uri dateUri);
+        public void onItemSelected(String movieId);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        return new CursorLoader(getContext(), MoviesTable.CONTENT_URI, null, null, null, null);
+        return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         moviesAdapter.swapCursor(data);
-        MoviesEntry movie = MoviesTable.getRow(data, true);
-        recyclerView.smoothScrollToPosition(data.getPosition());
+       // moviesAdapter = new MyGridCursorAdapter(getActivity(), data);
+
+//        try {
+            List<MoviesEntry> movie = MoviesTable.getRows(data, true);
+//        } catch (Exception e) {
+//            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+//            Log.e("onLoadFinished: ", e.getMessage());
+//        }
+//        recyclerView.smoothScrollToPosition(data.getPosition());
     }
 
     @Override

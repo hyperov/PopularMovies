@@ -12,14 +12,14 @@ public class TrailersEntry {
     public TrailersEntry() {
     }
 
-    public TrailersEntry(String _id, String column_movie_id, String column_trailer) {
-        this._id = _id;
+    public TrailersEntry( String column_movie_id, String column_trailer) {
+       // this._id = _id;
         this.column_movie_id = column_movie_id;
         this.column_trailer = column_trailer;
     }
 
-    @SimpleSQLColumn(value = "_id", primary = true)
-    public String _id;
+    @SimpleSQLColumn(value = "_id", primary = true,autoincrement = true)
+    public int _id;
 
     @SimpleSQLColumn("movie_id")
     public String column_movie_id;

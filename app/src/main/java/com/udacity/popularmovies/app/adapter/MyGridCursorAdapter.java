@@ -3,49 +3,34 @@ package com.udacity.popularmovies.app.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.popularmovies.app.Activities.MainFragment;
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
 import com.udacity.popularmovies.app.db.tables.MoviesTable;
+
+import java.util.List;
 
 /**
  * Created by DELL I7 on 1/30/2016.
  */
 public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorAdapter.ViewHolder> {
 
-    public Context mContext;
-    public Cursor cursor;
 
     public MyGridCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
-        this.mContext = context;
-        this.cursor = cursor;
+
     }
 
-    @Override
-    public Cursor getCursor() {
-        return cursor;
-    }
 
-    public void setCursor(Cursor cursor) {
-        this.cursor = cursor;
-    }
-
-    public Context getmContext() {
-        return mContext;
-    }
-
-    public void setmContext(Context mContext) {
-        this.mContext = mContext;
-    }
-
-    public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView recycleItemImageView;
 
         public ViewHolder(View view) {
@@ -57,10 +42,14 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
 
         @Override
         public void onClick(View v) {
-cursor=(Cursor)v;
+//            cursor = (Cursor) v;
+//            cursor.get
 //            Cursor cursor = (Cursor) v.getAdapterPosition();
 //            View view = v.getRootView();
 //            itemView.get;
+            MoviesEntry movie = MoviesTable.getRow(getCursor(), true);
+            String movieId = movie.column_movie_id;
+            ((MainFragment.Callback) this).onItemSelected(movieId);
         }
     }
 
@@ -69,15 +58,20 @@ cursor=(Cursor)v;
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recycler_item, parent, false);
         ViewHolder vh = new ViewHolder(itemView);
-
+        itemView.setTag(vh);
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
-        MoviesEntry movie = MoviesTable.getRow(cursor, true);
-        Picasso.with(mContext).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movie.column_poster)
+    public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor,Context context,int position) {
+//        viewHolder.recycleItemImageView.setOnClickListener((View.OnClickListener) this);
+        List<MoviesEntry> movies = MoviesTable.getRows(cursor, true);
+        MoviesEntry movie = movies.get(position);
+//        MoviesEntry movie = movies.get(cursor.getPosition());
+        Picasso.with(context).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movie.column_poster)
                 .into(viewHolder.recycleItemImageView);
+
+        Log.e( "onBindViewHolder: ",movie.column_movie_name);
 
     }
 }

@@ -34,20 +34,30 @@ public class ApiCalls {
     public static final String BASE_TRAILERS_REVIEWS = "https://api.themoviedb.org/3/movie/";
 
     //json string= key
-    public static final String API_CALL_TRAILERS = BASE_TRAILERS_REVIEWS + API_CALL_MOVIE_ID +
-            "/videos?api_key=" + API_KEY;
+//    private static final String API_CALL_TRAILERS = BASE_TRAILERS_REVIEWS + API_CALL_MOVIE_ID +
+//            "/videos?api_key=" + API_KEY;
+
+    public static String getApiCallReviews() {
+        return BASE_TRAILERS_REVIEWS + API_CALL_MOVIE_ID +
+                "/reviews?api_key=" + API_KEY;
+    }
+
+    public static String getApiCallTrailers() {
+        return BASE_TRAILERS_REVIEWS + API_CALL_MOVIE_ID +
+                "/videos?api_key=" + API_KEY;
+    }
 
     //json string=author,content
-    public static final String API_CALL_REVIEWS = BASE_TRAILERS_REVIEWS + API_CALL_MOVIE_ID +
-            "/reviews?api_key=" + API_KEY;
+//    private static String API_CALL_REVIEWS = BASE_TRAILERS_REVIEWS + API_CALL_MOVIE_ID +
+//            "/reviews?api_key=" + API_KEY;
 
     //settings string =order of movies
     public static String MOVIE_ORDER;
 
     public static String getMovies(Context context) {
 
-        if (MOVIE_ORDER != context.getString(R.string.pref_movies_label_fav))
-            return BASE_API_CALL + MOVIE_ORDER;
+        if (getSettings(context) != context.getString(R.string.pref_movies_label_fav))
+            return BASE_API_CALL + getSettings(context);
 
         //setting
         return null;

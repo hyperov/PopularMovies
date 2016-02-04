@@ -65,82 +65,82 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                     JSONObject movieObject = results.getJSONObject(i);
                     ApiCalls.API_CALL_MOVIE_ID = movieObject.getString("id");
 
+                    MoviesEntry movie = new MoviesEntry( ApiCalls.API_CALL_MOVIE_ID, movieObject.getString("title"),
+                            movieObject.getString("poster_path"), movieObject.getString("overview"),
+                            movieObject.getString("vote_average"), movieObject.getString("release_date"), "f");
+
+                    //add content values to vector
+                    moviesVector.add(MoviesTable.getContentValues(movie, false));
+
                     /**********************************************************************************************/
                     //json parsing for reviews
-                    String jsonReviews = handler.getJsonString(ApiCalls.API_CALL_REVIEWS);
+                    String jsonReviews = handler.getJsonString(ApiCalls.getApiCallReviews());
                     JSONObject reviewObject = new JSONObject(jsonReviews);
 
-                    JSONArray reviewResults=reviewObject.getJSONArray("results");
+                    JSONArray reviewResults = reviewObject.getJSONArray("results");
 
                     Vector<ContentValues> reviewsVector = new Vector<ContentValues>(reviewResults.length());
 
                     for (int k = 0; k < reviewResults.length(); k++) {
-                        JSONObject reviewItem=reviewResults.getJSONObject(k);
+                        JSONObject reviewItem = reviewResults.getJSONObject(k);
 
-                        ReviewsEntry review=new ReviewsEntry("",ApiCalls.API_CALL_MOVIE_ID
-                                ,reviewItem.getString("author"),reviewItem.getString("content"));
+                        ReviewsEntry review = new ReviewsEntry( ApiCalls.API_CALL_MOVIE_ID
+                                , reviewItem.getString("author"), reviewItem.getString("content"));
 
                         //add reviews content values to vector
                         reviewsVector.add(ReviewsTable.getContentValues(review, false));
                     }
 
-                    if ( reviewsVector.size() > 0 ) {
+                    if (reviewsVector.size() > 0) {
                         ContentValues[] cvrArray = new ContentValues[reviewsVector.size()];
                         reviewsVector.toArray(cvrArray);
-                        getContext().getContentResolver().bulkInsert(ReviewsTable.CONTENT_URI,cvrArray);
+                        getContext().getContentResolver().bulkInsert(ReviewsTable.CONTENT_URI, cvrArray);
                     }
 
                     //delete old reviews which their movie no longer exist in the database
 
                     /***********************************************************************************************/
                     //json parsing for trailers
-                    String jsonTrailers = handler.getJsonString(ApiCalls.API_CALL_REVIEWS);
+                    String jsonTrailers = handler.getJsonString(ApiCalls.getApiCallTrailers());
                     JSONObject trailerObject = new JSONObject(jsonTrailers);
 
-                    JSONArray trailerResults=trailerObject.getJSONArray("results");
+                    JSONArray trailerResults = trailerObject.getJSONArray("results");
 
                     Vector<ContentValues> trailersVector = new Vector<ContentValues>(trailerResults.length());
 
                     for (int v = 0; v < trailerResults.length(); v++) {
-                        JSONObject trailerItem=trailerResults.getJSONObject(v);
+                        JSONObject trailerItem = trailerResults.getJSONObject(v);
 
-                        TrailersEntry trailer=new TrailersEntry("",ApiCalls.API_CALL_MOVIE_ID
-                                ,trailerItem.getString("key"));
+                        TrailersEntry trailer = new TrailersEntry( ApiCalls.API_CALL_MOVIE_ID
+                                , trailerItem.getString("key"));
 
                         //add reviews content values to vector
                         trailersVector.add(TrailersTable.getContentValues(trailer, false));
                     }
 
-                    if ( trailersVector.size() > 0 ) {
+                    if (trailersVector.size() > 0) {
                         ContentValues[] cvtArray = new ContentValues[trailersVector.size()];
                         trailersVector.toArray(cvtArray);
-                        getContext().getContentResolver().bulkInsert(TrailersTable.CONTENT_URI,cvtArray);
+                        getContext().getContentResolver().bulkInsert(TrailersTable.CONTENT_URI, cvtArray);
                     }
 
                     //delete old trailers which their movie no longer exist in the database
 
 
                     /***********************************************************************************************/
-                    MoviesEntry movie = new MoviesEntry("", ApiCalls.API_CALL_MOVIE_ID, movieObject.getString("title"),
-                            movieObject.getString("poster_path"), movieObject.getString("overview"),
-                            movieObject.getString("vote_average"), movieObject.getString("release_date"), "f");
 
-                    //add content values to vector
-                    moviesVector.add(MoviesTable.getContentValues(movie, false));
                 }
 
-                if ( moviesVector.size() > 0 ) {
+                if (moviesVector.size() > 0) {
                     ContentValues[] cvArray = new ContentValues[moviesVector.size()];
                     moviesVector.toArray(cvArray);
-                    getContext().getContentResolver().bulkInsert(MoviesTable.CONTENT_URI,cvArray);
+                    getContext().getContentResolver().bulkInsert(MoviesTable.CONTENT_URI, cvArray);
                 }
                 //delete old movies which aren't anymore in page 1
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
 
 
         }

@@ -9,11 +9,6 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
-    <provider
-        android:name=".data.SimpleSqlProvider"
-        android:authorities="com.udacity.popularmovies.app"
-        android:exported="false"
-        android:syncable="true" />
 
     <application
         android:allowBackup="true"
@@ -45,7 +40,7 @@
                 android:value="com.udacity.popularmovies.app.Activities.MainActivity" />
         </activity>
 
-        <service android:name=".sync.PopularMoviesAuthenticatorService" />
+        <service android:name=".sync.PopularMoviesAuthenticatorService">
 
         <intent-filter>
             <action android:name="android.accounts.AccountAuthenticator" />
@@ -54,20 +49,27 @@
         <meta-data
             android:name="android.accounts.AccountAuthenticator"
             android:resource="@xml/authenticator" />
-        />
+        </service>
 
         <service
             android:name=".sync.PopularMoviesSyncService"
-
             android:exported="true">
 
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
+        <provider
+            android:name=".data.PopularProvider"
+            android:authorities="com.udacity.popularmovies.app"
+            android:exported="false"
+            android:syncable="true" />
+
     </application>
 
 </manifest>
