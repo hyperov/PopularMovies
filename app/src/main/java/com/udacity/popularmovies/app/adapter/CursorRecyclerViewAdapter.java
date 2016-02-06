@@ -1,13 +1,37 @@
 package com.udacity.popularmovies.app.adapter;
 
+
+/*
+ * Copyright (C) 2014 skyfish.jy@gmail.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+
+/**
+ * Created by DELL I7 on 2/4/2016.
+ */
 
 public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
-    private Context mContext;
+//    private Context mContext;
 
     private Cursor mCursor;
 
@@ -17,14 +41,18 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 
     private DataSetObserver mDataSetObserver;
 
+    private ContentObserver mContentObserver;
+
     public CursorRecyclerViewAdapter(Context context, Cursor cursor) {
-        mContext = context;
+//        mContext = context;
         mCursor = cursor;
         mDataValid = cursor != null;
         mRowIdColumn = mDataValid ? mCursor.getColumnIndex("_id") : -1;
         mDataSetObserver = new NotifyingDataSetObserver();
+        mContentObserver = new NotifyingContentObserver();
         if (mCursor != null) {
             mCursor.registerDataSetObserver(mDataSetObserver);
+            mCursor.registerContentObserver(mContentObserver);
         }
     }
 
@@ -34,6 +62,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
+//        if (mDataValid && mCursor != null) {
         if (mDataValid && mCursor != null) {
             return mCursor.getCount();
         }
@@ -43,17 +72,20 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
     @Override
     public long getItemId(int position) {
         if (mDataValid && mCursor != null && mCursor.moveToPosition(position)) {
+//        if (mDataValid && mCursor.moveToPosition(position)) {
+
             return mCursor.getLong(mRowIdColumn);
         }
         return 0;
     }
 
-    @Override
-    public void setHasStableIds(boolean hasStableIds) {
-        super.setHasStableIds(true);
-    }
 
-    public abstract void onBindViewHolder(VH viewHolder, Cursor cursor,Context context,int position);
+    //    @Override
+//    public void setHasStableIds(boolean hasStableIds) {
+//        super.setHasStableIds(true);
+//    }
+
+    public abstract void onBindViewHolder(VH viewHolder, Cursor cursor);
 
     @Override
     public void onBindViewHolder(VH viewHolder, int position) {
@@ -63,7 +95,11 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         if (!mCursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        onBindViewHolder(viewHolder, mCursor,mContext,position);
+
+        mCursor.moveToPosition(position);
+        onBindViewHolder(viewHolder, mCursor);
+
+
     }
 
     /**
@@ -86,17 +122,26 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         if (newCursor == mCursor) {
             return null;
         }
-        final Cursor oldCursor = mCursor;
-        if (oldCursor != null && mDataSetObserver != null) {
-            oldCursor.unregisterDataSetObserver(mDataSetObserver);
+        Cursor oldCursor = mCursor;
+        if (oldCursor != null) {
+            if (mDataSetObserver != null)
+                oldCursor.unregisterDataSetObserver(mDataSetObserver);
+            if (mContentObserver != null)
+                oldCursor.unregisterContentObserver(mContentObserver);
         }
         mCursor = newCursor;
         if (mCursor != null) {
             if (mDataSetObserver != null) {
                 mCursor.registerDataSetObserver(mDataSetObserver);
             }
+            if (mContentObserver != null) {
+                mCursor.registerContentObserver(mContentObserver);
+            }
             mRowIdColumn = newCursor.getColumnIndexOrThrow("_id");
             mDataValid = true;
+//            int newSize = newCursor.getCount();
+//            int oldSize = (oldCursor != null) ? oldCursor.getCount() : 0;
+//            notifyItemRangeInserted(oldSize, newSize - oldSize);
             notifyDataSetChanged();
         } else {
             mRowIdColumn = -1;
@@ -122,5 +167,31 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
             notifyDataSetChanged();
             //There is no notifyDataSetInvalidated() method in RecyclerView.Adapter
         }
+    }
+
+    private class NotifyingContentObserver extends ContentObserver {
+
+        //        /**
+//         * Creates a content observer.
+//         *
+//         * @param handler The handler to run {@link #onChange} on, or null if none.
+//         */
+        public NotifyingContentObserver() {
+            super(new Handler());
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            mDataValid = true;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return true;
+        }
+
+
     }
 }

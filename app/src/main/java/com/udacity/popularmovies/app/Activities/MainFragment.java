@@ -17,10 +17,7 @@ import android.view.ViewGroup;
 
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.adapter.MyGridCursorAdapter;
-import com.udacity.popularmovies.app.db.tables.MoviesEntry;
 import com.udacity.popularmovies.app.db.tables.MoviesTable;
-
-import java.util.List;
 
 /**
  * Created by DELL I7 on 1/28/2016.
@@ -49,26 +46,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         moviesAdapter = new MyGridCursorAdapter(getActivity(), null);
-
-
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
-        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if ((position + 1) / 3 == 0) {
-                    return 1;
-                } else {
-                    return 2;
-                }
-
-            }
-        });
-//        RecyclerView.ItemDecoration itemDecoration=new
-
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(moviesAdapter);
-
         return rootView;
     }
 
@@ -82,6 +63,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         getLoaderManager().initLoader(MOVIES_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
+
 
     public void restartCursorLoader() {
         getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
@@ -102,16 +84,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        moviesAdapter.swapCursor(data);
-       // moviesAdapter = new MyGridCursorAdapter(getActivity(), data);
 
-//        try {
-            List<MoviesEntry> movie = MoviesTable.getRows(data, true);
-//        } catch (Exception e) {
-//            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-//            Log.e("onLoadFinished: ", e.getMessage());
-//        }
-//        recyclerView.smoothScrollToPosition(data.getPosition());
+        moviesAdapter.swapCursor(data);
+        if (!data.moveToNext())
+            data.close();
     }
 
     @Override
