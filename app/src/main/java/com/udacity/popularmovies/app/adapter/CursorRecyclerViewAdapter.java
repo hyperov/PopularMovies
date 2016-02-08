@@ -65,6 +65,8 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 //        if (mDataValid && mCursor != null) {
         if (mDataValid && mCursor != null) {
             return mCursor.getCount();
+//            return 20;
+
         }
         return 0;
     }
@@ -72,18 +74,12 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
     @Override
     public long getItemId(int position) {
         if (mDataValid && mCursor != null && mCursor.moveToPosition(position)) {
-//        if (mDataValid && mCursor.moveToPosition(position)) {
 
             return mCursor.getLong(mRowIdColumn);
         }
         return 0;
     }
 
-
-    //    @Override
-//    public void setHasStableIds(boolean hasStableIds) {
-//        super.setHasStableIds(true);
-//    }
 
     public abstract void onBindViewHolder(VH viewHolder, Cursor cursor);
 
@@ -93,10 +89,10 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
             throw new IllegalStateException("this should only be called when the cursor is valid");
         }
         if (!mCursor.moveToPosition(position)) {
+            mCursor.close();
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
 
-        mCursor.moveToPosition(position);
         onBindViewHolder(viewHolder, mCursor);
 
 
@@ -139,9 +135,6 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
             }
             mRowIdColumn = newCursor.getColumnIndexOrThrow("_id");
             mDataValid = true;
-//            int newSize = newCursor.getCount();
-//            int oldSize = (oldCursor != null) ? oldCursor.getCount() : 0;
-//            notifyItemRangeInserted(oldSize, newSize - oldSize);
             notifyDataSetChanged();
         } else {
             mRowIdColumn = -1;

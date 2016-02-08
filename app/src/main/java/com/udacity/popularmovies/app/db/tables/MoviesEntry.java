@@ -9,10 +9,10 @@ import ckm.simple.sql_provider.annotation.SimpleSQLTable;
 @SimpleSQLTable(table = "movies", provider = "PopularProvider")
 public class MoviesEntry {
 
-    public MoviesEntry( String column_movie_id, String column_movie_name, String column_poster,
-                       String column_plot, String column_user_rating,
-                       String column_release_date, String column_favourite) {
-      //  this._id = _id;
+    public MoviesEntry(String column_movie_id, String column_movie_name, String column_poster,
+                       String column_plot, double column_user_rating,
+                       String column_release_date, String column_favourite, double column_popularity) {
+        //  this._id = _id;
         this.column_movie_id = column_movie_id;
         this.column_movie_name = column_movie_name;
         this.column_poster = column_poster;
@@ -20,13 +20,14 @@ public class MoviesEntry {
         this.column_user_rating = column_user_rating;
         this.column_release_date = column_release_date;
         this.column_favourite = column_favourite;
+        this.column_popularity = column_popularity;
     }
 
 
     public MoviesEntry() {
     }
 
-    @SimpleSQLColumn(value = "_id", primary = true,autoincrement = true)
+    @SimpleSQLColumn(value = "_id", primary = true, autoincrement = true)
     public int _id;
     // Table name
     @SimpleSQLColumn("movie_id")
@@ -42,7 +43,7 @@ public class MoviesEntry {
     public String column_plot;
 
     @SimpleSQLColumn("user_rating")
-    public String column_user_rating;
+    public double column_user_rating;
 
     @SimpleSQLColumn("release_date")
     public String column_release_date;
@@ -50,4 +51,7 @@ public class MoviesEntry {
     //t=true, f=false
     @SimpleSQLColumn("favourite")
     public String column_favourite;
+
+    @SimpleSQLColumn("popularity")
+    public double column_popularity;
 }

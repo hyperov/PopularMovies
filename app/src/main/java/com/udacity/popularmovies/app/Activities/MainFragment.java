@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.adapter.MyGridCursorAdapter;
+import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.MoviesTable;
 
 /**
@@ -44,8 +45,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         moviesAdapter = new MyGridCursorAdapter(getActivity(), null);
+
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -78,17 +80,39 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String pref = ApiCalls.getSettings(getActivity());
 
-        return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null, null, null, null);
+        //pref is favourites
+        if (pref == getActivity().getString(R.string.pref_movies_label_fav)) {
+
+            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
+                    ApiCalls.FAV_SELECT, new String[]{ApiCalls.FAV_SELECT_ARGS}, null);
+
+            //pref is popular movies
+        } else if (pref == getActivity().getString(R.string.pref_movies_label_popular_entry)) {
+
+            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
+                    null, null, ApiCalls.POPULARITY_SORT_ORDER);
+
+            //pref is high rating movies
+        } else if (pref == getActivity().getString(R.string.pref_movies_label_rating_entry)) {
+
+            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
+                    null, null, ApiCalls.RATING_SORT_ORDER);
+
+        }
+
+        return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         moviesAdapter.swapCursor(data);
-        if (!data.moveToNext())
-            data.close();
+//        if (!data.moveToNext())
+//        data.close();
     }
+
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {

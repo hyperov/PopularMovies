@@ -9,8 +9,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncRequest;
 import android.content.SyncResult;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.api.ApiCalls;
@@ -45,8 +47,20 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 
+        Cursor MoviesCursor = null;
+        try {
+            MoviesCursor = getContext().getContentResolver().query(MoviesTable.CONTENT_URI, null, null, null, null);
 
-        // movies = new ArrayList<Movie>();
+        } catch (Exception e) {
+            Log.e("onPerformSync: ", e.getMessage());
+        }
+
+        //cursor has results
+        if (MoviesCursor.moveToFirst()) {
+            int y = getContext().getContentResolver().delete(MoviesTable.CONTENT_URI, "1", null);
+        }
+        MoviesCursor.close();
+        // cursor is null,insert review
 
         JsonHandler handler = new JsonHandler();
 
@@ -60,19 +74,30 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                 //add content values of movies to vector
                 Vector<ContentValues> moviesVector = new Vector<ContentValues>(results.length());
 
-
+                ApiCalls.RESULTS_PER_PAGE = results.length();
                 for (int i = 0; i < results.length(); i++) {
                     JSONObject movieObject = results.getJSONObject(i);
                     ApiCalls.API_CALL_MOVIE_ID = movieObject.getString("id");
 
-                    MoviesEntry movie = new MoviesEntry( ApiCalls.API_CALL_MOVIE_ID, movieObject.getString("title"),
+                    MoviesEntry movie = new MoviesEntry(ApiCalls.API_CALL_MOVIE_ID, movieObject.getString("title"),
                             movieObject.getString("poster_path"), movieObject.getString("overview"),
-                            movieObject.getString("vote_average"), movieObject.getString("release_date"), "f");
+                            movieObject.getDouble("vote_average"), movieObject.getString("release_date"),
+                            "f", movieObject.getDouble("popularity"));
 
                     //add content values to vector
                     moviesVector.add(MoviesTable.getContentValues(movie, false));
 
                     /**********************************************************************************************/
+                    Cursor reviewsCursor = getContext().getContentResolver()
+                            .query(ReviewsTable.CONTENT_URI, null, null, null, null);
+
+                    //cursor has results
+                    if (reviewsCursor.moveToFirst()) {
+                        int m = getContext().getContentResolver().delete(ReviewsTable.CONTENT_URI, "1", null);
+                    }
+                    reviewsCursor.close();
+                    // cursor is null,insert review
+
                     //json parsing for reviews
                     String jsonReviews = handler.getJsonString(ApiCalls.getApiCallReviews());
                     JSONObject reviewObject = new JSONObject(jsonReviews);
@@ -84,7 +109,7 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                     for (int k = 0; k < reviewResults.length(); k++) {
                         JSONObject reviewItem = reviewResults.getJSONObject(k);
 
-                        ReviewsEntry review = new ReviewsEntry( ApiCalls.API_CALL_MOVIE_ID
+                        ReviewsEntry review = new ReviewsEntry(ApiCalls.API_CALL_MOVIE_ID
                                 , reviewItem.getString("author"), reviewItem.getString("content"));
 
                         //add reviews content values to vector
@@ -97,9 +122,18 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                         getContext().getContentResolver().bulkInsert(ReviewsTable.CONTENT_URI, cvrArray);
                     }
 
-                    //delete old reviews which their movie no longer exist in the database
 
                     /***********************************************************************************************/
+                    Cursor TrailersCursor = getContext().getContentResolver()
+                            .query(TrailersTable.CONTENT_URI, null, null, null, null);
+
+                    //cursor has results
+                    if (TrailersCursor.moveToFirst()) {
+                        int k = getContext().getContentResolver().delete(TrailersTable.CONTENT_URI, "1", null);
+                    }
+                    TrailersCursor.close();
+                    // cursor is null,insert review
+
                     //json parsing for trailers
                     String jsonTrailers = handler.getJsonString(ApiCalls.getApiCallTrailers());
                     JSONObject trailerObject = new JSONObject(jsonTrailers);
@@ -111,7 +145,7 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                     for (int v = 0; v < trailerResults.length(); v++) {
                         JSONObject trailerItem = trailerResults.getJSONObject(v);
 
-                        TrailersEntry trailer = new TrailersEntry( ApiCalls.API_CALL_MOVIE_ID
+                        TrailersEntry trailer = new TrailersEntry(ApiCalls.API_CALL_MOVIE_ID
                                 , trailerItem.getString("key"));
 
                         //add reviews content values to vector
@@ -124,8 +158,6 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                         getContext().getContentResolver().bulkInsert(TrailersTable.CONTENT_URI, cvtArray);
                     }
 
-                    //delete old trailers which their movie no longer exist in the database
-
 
                     /***********************************************************************************************/
 
@@ -136,7 +168,6 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                     moviesVector.toArray(cvArray);
                     getContext().getContentResolver().bulkInsert(MoviesTable.CONTENT_URI, cvArray);
                 }
-                //delete old movies which aren't anymore in page 1
 
             } catch (JSONException e) {
                 e.printStackTrace();

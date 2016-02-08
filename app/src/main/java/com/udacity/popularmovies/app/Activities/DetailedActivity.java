@@ -2,39 +2,36 @@ package com.udacity.popularmovies.app.Activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.udacity.popularmovies.app.R;
-import com.udacity.popularmovies.app.api.ApiCalls;
-import com.udacity.popularmovies.app.pojo.Movie;
 
 public class DetailedActivity extends AppCompatActivity {
 
-    TextView title, plot, release, rating;
-    ImageView poster;
+
+    public static final String MOVIE_ID_TAG = "movieId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed);
-        Bundle b = getIntent().getExtras();
-        Movie obj = b.getParcelable("pojo.Movie");
-        // b.getParcelable("pojo.Movie");
 
-        title = (TextView) findViewById(R.id.title1);
-        plot = (TextView) findViewById(R.id.plotsubject);
-        release = (TextView) findViewById(R.id.releasedate);
-        rating = (TextView) findViewById(R.id.ratingnumber);
-        poster = (ImageView) findViewById(R.id.imageView);
+        if (savedInstanceState == null) {
 
-        title.setText(obj.getTitle());
-        plot.setText(obj.getPlotSynopsis());
-        release.setText(obj.getReleaseDate());
-        rating.setText(obj.getUserRating());
+            Bundle arguments = new Bundle();
+            arguments.putString(DetailedActivity.MOVIE_ID_TAG,
+                    getIntent().getExtras().getString(MOVIE_ID_TAG));
 
-        Picasso.with(this).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + obj.getImg()).into(poster);
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(arguments);
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.movies_detail_container, fragment)
+                    .commit();
+        }
+
+
+
 
 
     }

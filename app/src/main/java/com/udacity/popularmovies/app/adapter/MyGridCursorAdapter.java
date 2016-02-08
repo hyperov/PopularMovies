@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.popularmovies.app.Activities.MainFragment;
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
@@ -20,22 +21,37 @@ import com.udacity.popularmovies.app.db.tables.MoviesTable;
  */
 public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorAdapter.ViewHolder> {
 
+    public Cursor itemCursor;
+    public MoviesEntry movie;
+
     public MyGridCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
-        setHasStableIds(true);
+//        setHasStableIds(true);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    //    public static
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView recycleItemImageView;
 
         public ViewHolder(View view) {
             super(view);
             recycleItemImageView = (ImageView) view.findViewById(R.id.recycle_image_view);
         }
+
+        @Override
+        public void onClick(View v) {
+
+            if (itemCursor != null) {
+                ((MainFragment.Callback) recycleItemImageView.getContext())
+                        .onItemSelected(movie.column_movie_id);
+            }
+//            mPosition = position;
+        }
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recycler_item, parent, false);
         ViewHolder vh = new ViewHolder(itemView);
@@ -45,18 +61,10 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
-//        List<MoviesEntry> movies = MoviesTable.getRows(cursor, false);
-//        cursor.setNotificationUri(viewHolder.itemView.
-//                getContext().getContentResolver(), MoviesTable.CONTENT_URI);
-//        cursor.close();
-
+        itemCursor = cursor;
         MoviesEntry movie = MoviesTable.getRow(cursor, false);
         Picasso.with(viewHolder.itemView.getContext()).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movie.column_poster).
                 into(viewHolder.recycleItemImageView);
-
-
-//        cursor.close();
-
 
     }
 

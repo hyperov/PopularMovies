@@ -102,12 +102,41 @@
             android:text="the plot" />
 
         <TextView
+            android:id="@+id/trailer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/plotsubject"
             android:layout_below="@+id/plotsubject"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="Reviews" />
+            android:text="Trailer" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/trailers"
+            android:layout_alignLeft="@+id/trailer"
+            android:layout_below="@+id/trailer"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/trailers"
+            android:layout_below="@+id/trailers"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:id="@+id/review"
+            android:text="User Reviews" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/reviews"
+            android:layout_alignLeft="@+id/review"
+            android:layout_below="@+id/review"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            />
 
         <!--add content,author programatically-->
         <!--add trailers programatically-->
