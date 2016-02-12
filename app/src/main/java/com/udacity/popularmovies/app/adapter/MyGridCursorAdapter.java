@@ -26,7 +26,7 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
 
     public MyGridCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
-//        setHasStableIds(true);
+
     }
 
     //    public static
@@ -35,7 +35,9 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
 
         public ViewHolder(View view) {
             super(view);
+            view.setOnClickListener(this);
             recycleItemImageView = (ImageView) view.findViewById(R.id.recycle_image_view);
+//            recycleItemImageView.setOnClickListener(this);
         }
 
         @Override
@@ -45,7 +47,8 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
                 ((MainFragment.Callback) recycleItemImageView.getContext())
                         .onItemSelected(movie.column_movie_id);
             }
-//            mPosition = position;
+
+            MainFragment.mPosition = itemCursor.getPosition();
         }
     }
 
@@ -54,6 +57,7 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
 
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recycler_item, parent, false);
+
         ViewHolder vh = new ViewHolder(itemView);
         itemView.setTag(vh);
         return vh;
@@ -62,7 +66,8 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
         itemCursor = cursor;
-        MoviesEntry movie = MoviesTable.getRow(cursor, false);
+
+        movie = MoviesTable.getRow(cursor, false);
         Picasso.with(viewHolder.itemView.getContext()).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movie.column_poster).
                 into(viewHolder.recycleItemImageView);
 

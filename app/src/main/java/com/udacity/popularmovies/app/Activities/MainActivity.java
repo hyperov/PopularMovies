@@ -22,7 +22,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
 
 
     private String mOrder;
-    private boolean mTwoPane;
+    //    private boolean mTwoPane;
+    public static boolean mTwoPane;
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     @Override
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
             getSupportActionBar().setElevation(0f);
         }
 
-        if (isNetworkAvailable())
+        if (isNetworkAvailable() && ApiCalls.getMovies(this) != null)
             PopularMoviesSyncAdapter.initializeSyncAdapter(this);
 
     }
@@ -93,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     protected void onResume() {
         super.onResume();
         String order = ApiCalls.getSettings(this);
-
         // update if setting changes
         if (order != null && !order.equals(mOrder) && order != getString(R.string.pref_movies_label_fav)) {
             MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);

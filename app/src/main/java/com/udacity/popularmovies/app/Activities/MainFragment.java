@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.adapter.MyGridCursorAdapter;
@@ -27,7 +28,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
 
     private RecyclerView recyclerView;
-    private int mPosition = -1;
+    public static int mPosition = ListView.INVALID_POSITION;
 
     private static final String SELECTED_KEY = "selected_position";
 
@@ -52,6 +53,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(moviesAdapter);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
+            // The listview probably hasn't even been populated yet.  Actually perform the
+            // swapout in onLoadFinished.
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+        }
         return rootView;
     }
 
@@ -66,6 +73,14 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         super.onActivityCreated(savedInstanceState);
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mPosition != ListView.INVALID_POSITION) {
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
+        super.onSaveInstanceState(outState);
+    }
 
     public void restartCursorLoader() {
         getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
@@ -86,7 +101,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         if (pref == getActivity().getString(R.string.pref_movies_label_fav)) {
 
             return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
-                    ApiCalls.FAV_SELECT, new String[]{ApiCalls.FAV_SELECT_ARGS}, null);
+                    ApiCalls.FAV_SELECT, new String[]{ApiCalls.FAV_SELECT_ARGS_true}, null);
 
             //pref is popular movies
         } else if (pref == getActivity().getString(R.string.pref_movies_label_popular_entry)) {
@@ -109,8 +124,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         moviesAdapter.swapCursor(data);
-//        if (!data.moveToNext())
-//        data.close();
+        if (mPosition != ListView.INVALID_POSITION) {
+            // If we don't need to restart the loader, and there's a desired position to restore
+            // to, do so now.
+            recyclerView.smoothScrollToPosition(mPosition);
+        }
+
     }
 
 

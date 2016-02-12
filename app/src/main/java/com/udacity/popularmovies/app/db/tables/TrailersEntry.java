@@ -12,10 +12,10 @@ public class TrailersEntry {
     public TrailersEntry() {
     }
 
-    public TrailersEntry( String column_movie_id, String column_trailer) {
-       // this._id = _id;
+    public TrailersEntry(String column_movie_id, String column_trailer, String column_trailer_name) {
         this.column_movie_id = column_movie_id;
         this.column_trailer = column_trailer;
+        this.column_trailer_name = column_trailer_name;
     }
 
     @SimpleSQLColumn(value = "_id", primary = true,autoincrement = true)
@@ -27,4 +27,8 @@ public class TrailersEntry {
     // the string in this column is to be added to full youtube url
     @SimpleSQLColumn("trailer")
     public String column_trailer;
+
+   //name of trailer
+    @SimpleSQLColumn("trailer_name")
+    public String column_trailer_name;
 }

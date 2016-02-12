@@ -18,7 +18,7 @@ public class DetailedActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
 
             Bundle arguments = new Bundle();
-            arguments.putString(DetailedActivity.MOVIE_ID_TAG,
+            arguments.putString(MOVIE_ID_TAG,
                     getIntent().getExtras().getString(MOVIE_ID_TAG));
 
 
@@ -31,23 +31,6 @@ public class DetailedActivity extends AppCompatActivity {
         }
 
 
-
-
-
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        if (id == R.id.action_settings) {
-//            startActivity(new Intent(this, SettingsActivity.class));
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 }

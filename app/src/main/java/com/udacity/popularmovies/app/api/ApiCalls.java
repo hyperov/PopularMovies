@@ -25,7 +25,7 @@ public class ApiCalls {
     public static final String BASE_IMAGE_WIDTH_780 = "w780";
     public static final String BASE_IMAGE_WIDTH_original = "original";
 
-    public static final String BASE_IMAGE_URL_AND_WIDTH = BASE_IMAGE_POSTER_URL + BASE_IMAGE_WIDTH_342;
+    public static final String BASE_IMAGE_URL_AND_WIDTH = BASE_IMAGE_POSTER_URL + BASE_IMAGE_WIDTH_185;
 
     public static final String BASE_API_CALL_MOVIE = "https://api.themoviedb.org/3/discover/movie?api_key="
             + API_KEY + "&sort_by=";
@@ -35,15 +35,19 @@ public class ApiCalls {
 
     public static final String BASE_TRAILERS_REVIEWS = "https://api.themoviedb.org/3/movie/";
 
+    //add this string before trailer url
+    public static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
+
     // where select strings for preference
 
     public static final String FAV_SELECT = "favourite =? ";
 
 
     // where select args for preference
-    public static final String FAV_SELECT_ARGS = "t";
-    public static final String POPULARITY_SORT_ORDER = MoviesTable.FIELD_POPULARITY + " DESC LIMIT 20";
-    public static final String RATING_SORT_ORDER = MoviesTable.FIELD_USER_RATING + " DESC LIMIT 20";
+    public static final String FAV_SELECT_ARGS_false = "f";
+    public static final String FAV_SELECT_ARGS_true = "t";
+    public static final String POPULARITY_SORT_ORDER = MoviesTable.FIELD_POPULARITY + " DESC";
+    public static final String RATING_SORT_ORDER = MoviesTable.FIELD_USER_RATING + " DESC";
 
     public static int RESULTS_PER_PAGE;
 

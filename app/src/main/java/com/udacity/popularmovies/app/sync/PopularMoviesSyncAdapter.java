@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.udacity.popularmovies.app.Activities.MainActivity;
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
@@ -65,35 +66,37 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         JsonHandler handler = new JsonHandler();
 
         //not setting
-        if (ApiCalls.getMovies(getContext()) != null) {
-            String jsonMovies = handler.getJsonString(ApiCalls.getMovies(getContext()));
-            try {
-                JSONObject object = new JSONObject(jsonMovies);
-                JSONArray results = object.getJSONArray("results");
+        String jsonMovies = handler.getJsonString(ApiCalls.getMovies(getContext()));
+        try {
+            JSONObject object = new JSONObject(jsonMovies);
+            JSONArray results = object.getJSONArray("results");
 
-                //add content values of movies to vector
-                Vector<ContentValues> moviesVector = new Vector<ContentValues>(results.length());
+            //add content values of movies to vector
+            Vector<ContentValues> moviesVector = new Vector<ContentValues>(results.length());
 
-                ApiCalls.RESULTS_PER_PAGE = results.length();
-                for (int i = 0; i < results.length(); i++) {
-                    JSONObject movieObject = results.getJSONObject(i);
-                    ApiCalls.API_CALL_MOVIE_ID = movieObject.getString("id");
+            ApiCalls.RESULTS_PER_PAGE = results.length();
+            for (int i = 0; i < results.length(); i++) {
+                JSONObject movieObject = results.getJSONObject(i);
+                ApiCalls.API_CALL_MOVIE_ID = movieObject.getString("id");
 
-                    MoviesEntry movie = new MoviesEntry(ApiCalls.API_CALL_MOVIE_ID, movieObject.getString("title"),
-                            movieObject.getString("poster_path"), movieObject.getString("overview"),
-                            movieObject.getDouble("vote_average"), movieObject.getString("release_date"),
-                            "f", movieObject.getDouble("popularity"));
+                MoviesEntry movie = new MoviesEntry(ApiCalls.API_CALL_MOVIE_ID, movieObject.getString("title"),
+                        movieObject.getString("poster_path"), movieObject.getString("overview"),
+                        movieObject.getDouble("vote_average"), movieObject.getString("release_date"),
+                        "f", movieObject.getDouble("popularity"));
 
-                    //add content values to vector
-                    moviesVector.add(MoviesTable.getContentValues(movie, false));
+                //add content values to vector
+                moviesVector.add(MoviesTable.getContentValues(movie, false));
 
-                    /**********************************************************************************************/
+                /**********************************************************************************************/
+                //parse trailers and reviews only if detail fragment exist
+                if (MainActivity.mTwoPane) {
                     Cursor reviewsCursor = getContext().getContentResolver()
                             .query(ReviewsTable.CONTENT_URI, null, null, null, null);
 
                     //cursor has results
                     if (reviewsCursor.moveToFirst()) {
-                        int m = getContext().getContentResolver().delete(ReviewsTable.CONTENT_URI, "1", null);
+                        int m = getContext().getContentResolver().delete(ReviewsTable.CONTENT_URI,
+                                ApiCalls.FAV_SELECT, new String[]{ApiCalls.FAV_SELECT_ARGS_false});
                     }
                     reviewsCursor.close();
                     // cursor is null,insert review
@@ -108,6 +111,7 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 
                     for (int k = 0; k < reviewResults.length(); k++) {
                         JSONObject reviewItem = reviewResults.getJSONObject(k);
+
 
                         ReviewsEntry review = new ReviewsEntry(ApiCalls.API_CALL_MOVIE_ID
                                 , reviewItem.getString("author"), reviewItem.getString("content"));
@@ -145,8 +149,9 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                     for (int v = 0; v < trailerResults.length(); v++) {
                         JSONObject trailerItem = trailerResults.getJSONObject(v);
 
+
                         TrailersEntry trailer = new TrailersEntry(ApiCalls.API_CALL_MOVIE_ID
-                                , trailerItem.getString("key"));
+                                , trailerItem.getString("key"), trailerItem.getString("name"));
 
                         //add reviews content values to vector
                         trailersVector.add(TrailersTable.getContentValues(trailer, false));
@@ -160,21 +165,19 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 
 
                     /***********************************************************************************************/
-
                 }
-
-                if (moviesVector.size() > 0) {
-                    ContentValues[] cvArray = new ContentValues[moviesVector.size()];
-                    moviesVector.toArray(cvArray);
-                    getContext().getContentResolver().bulkInsert(MoviesTable.CONTENT_URI, cvArray);
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
 
+            if (moviesVector.size() > 0) {
+                ContentValues[] cvArray = new ContentValues[moviesVector.size()];
+                moviesVector.toArray(cvArray);
+                getContext().getContentResolver().bulkInsert(MoviesTable.CONTENT_URI, cvArray);
+            }
 
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
 
     }
 
