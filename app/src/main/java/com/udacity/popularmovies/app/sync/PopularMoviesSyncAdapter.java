@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.udacity.popularmovies.app.Activities.MainActivity;
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
@@ -89,14 +88,15 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 /**********************************************************************************************/
                 //parse trailers and reviews only if detail fragment exist
-                if (MainActivity.mTwoPane) {
+//                if (MainActivity.mTwoPane) {
                     Cursor reviewsCursor = getContext().getContentResolver()
-                            .query(ReviewsTable.CONTENT_URI, null, null, null, null);
+                            .query(ReviewsTable.CONTENT_URI, null, ReviewsTable.FIELD_MOVIE_ID + "=?"
+                                    , new String[]{ApiCalls.API_CALL_MOVIE_ID}, null);
 
                     //cursor has results
                     if (reviewsCursor.moveToFirst()) {
                         int m = getContext().getContentResolver().delete(ReviewsTable.CONTENT_URI,
-                                ApiCalls.FAV_SELECT, new String[]{ApiCalls.FAV_SELECT_ARGS_false});
+                                ReviewsTable.FIELD_MOVIE_ID + "=?", new String[]{ApiCalls.API_CALL_MOVIE_ID});
                     }
                     reviewsCursor.close();
                     // cursor is null,insert review
@@ -129,11 +129,14 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 
                     /***********************************************************************************************/
                     Cursor TrailersCursor = getContext().getContentResolver()
-                            .query(TrailersTable.CONTENT_URI, null, null, null, null);
+                            .query(TrailersTable.CONTENT_URI, null, ReviewsTable.FIELD_MOVIE_ID + "=?",
+                                    new String[]{ApiCalls.API_CALL_MOVIE_ID}, null);
 
                     //cursor has results
                     if (TrailersCursor.moveToFirst()) {
-                        int k = getContext().getContentResolver().delete(TrailersTable.CONTENT_URI, "1", null);
+                        int k = getContext().getContentResolver().delete(TrailersTable.CONTENT_URI,
+                                ReviewsTable.FIELD_MOVIE_ID + "=?",
+                                new String[]{ApiCalls.API_CALL_MOVIE_ID});
                     }
                     TrailersCursor.close();
                     // cursor is null,insert review
@@ -165,7 +168,7 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 
 
                     /***********************************************************************************************/
-                }
+//                }
             }
 
             if (moviesVector.size() > 0) {

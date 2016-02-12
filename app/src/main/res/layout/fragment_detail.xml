@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?><!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:paddingBottom="@dimen/activity_vertical_margin"--><!--android:paddingLeft="@dimen/activity_horizontal_margin"--><!--android:paddingRight="@dimen/activity_horizontal_margin"--><!--android:paddingTop="@dimen/activity_vertical_margin">-->
-
+<?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
 
     <RelativeLayout
@@ -115,13 +114,15 @@
             android:text="Trailer" />
 
         <ListView
+
             android:id="@+id/trailers"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_alignLeft="@+id/trailer"
             android:layout_below="@+id/trailer"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:background="@android:color/holo_blue_light" />
+            android:background="@android:color/holo_blue_light"
+            android:nestedScrollingEnabled="true" />
 
         <TextView
             android:id="@+id/review"
@@ -140,7 +141,10 @@
             android:layout_below="@+id/review"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:background="@android:color/holo_blue_light"
-            android:divider="@android:drawable/list_selector_background" />
+            android:divider="@android:drawable/list_selector_background"
+            android:nestedScrollingEnabled="true"
+
+            />
 
     </RelativeLayout>
 

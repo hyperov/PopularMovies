@@ -81,6 +81,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
 
+
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         getLoaderManager().initLoader(DETAIL_REVIEW_LOADER, null, this);
@@ -90,7 +92,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     public void restartCursorLoader() {
-        getLoaderManager().restartLoader(DETAIL_MOVIE_LOADER, null, this);
+        getLoaderManager().restartLoader(MainFragment.MOVIES_LOADER, null, this);
 
     }
 
