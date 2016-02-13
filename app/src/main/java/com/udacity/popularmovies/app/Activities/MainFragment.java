@@ -2,6 +2,7 @@ package com.udacity.popularmovies.app.Activities;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -17,8 +18,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.udacity.popularmovies.app.R;
-import com.udacity.popularmovies.app.cursoradapter.MyGridCursorAdapter;
 import com.udacity.popularmovies.app.api.ApiCalls;
+import com.udacity.popularmovies.app.arrayadapter.MoviesArrayAdapter;
+import com.udacity.popularmovies.app.cursoradapter.MyGridCursorAdapter;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
 import com.udacity.popularmovies.app.db.tables.MoviesTable;
 import com.udacity.popularmovies.app.loader.MainFragmentLoaderMovies;
@@ -41,6 +43,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     //adapter to use cursor adapter with recyclerView
     public MyGridCursorAdapter moviesAdapter;
 
+    //array adapter if not favourite
+    public MoviesArrayAdapter moviesArrayAdapter;
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -56,8 +61,13 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setAdapter(moviesAdapter);
 
+        if (ApiCalls.getSettings(getContext()) == getContext().getString(R.string.pref_movies_label_fav)) {
+            //favourites
+            recyclerView.setAdapter(moviesAdapter);
+        } else {
+            recyclerView.setAdapter(null);
+        }
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the
             // swapout in onLoadFinished.
@@ -73,7 +83,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(MOVIES_LOADER, null, this);
+        if (ApiCalls.getSettings(getContext()) == getContext().getString(R.string.pref_movies_label_fav)) {
+            getLoaderManager().initLoader(MOVIES_LOADER, null, this);
+        } else {
+            getLoaderManager().initLoader(1, null, moviesLoaderCallbacks).forceLoad();
+
+        }
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -94,7 +109,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(String movieId);
+
+        public void onItemSelected(String movieId, Parcelable movieEntry);
     }
 
     @Override
@@ -102,26 +118,28 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         String pref = ApiCalls.getSettings(getActivity());
 
         //pref is favourites
-        if (pref == getActivity().getString(R.string.pref_movies_label_fav)) {
+//        if (pref == getActivity().getString(R.string.pref_movies_label_fav)) {
+//
+//            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
+//                    ApiCalls.FAV_SELECT, new String[]{ApiCalls.FAV_SELECT_ARGS_true}, null);
+//
+//            //pref is popular movies
+//        } else if (pref == getActivity().getString(R.string.pref_movies_label_popular_entry)) {
+//
+//            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
+//                    null, null, ApiCalls.POPULARITY_SORT_ORDER);
+//
+//            //pref is high rating movies
+//        } else if (pref == getActivity().getString(R.string.pref_movies_label_rating_entry)) {
+//
+//            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
+//                    null, null, ApiCalls.RATING_SORT_ORDER);
+//
+//        }
 
-            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
-                    ApiCalls.FAV_SELECT, new String[]{ApiCalls.FAV_SELECT_ARGS_true}, null);
+        return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
+                ApiCalls.FAV_SELECT, new String[]{ApiCalls.FAV_SELECT_ARGS_true}, null);
 
-            //pref is popular movies
-        } else if (pref == getActivity().getString(R.string.pref_movies_label_popular_entry)) {
-
-            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
-                    null, null, ApiCalls.POPULARITY_SORT_ORDER);
-
-            //pref is high rating movies
-        } else if (pref == getActivity().getString(R.string.pref_movies_label_rating_entry)) {
-
-            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
-                    null, null, ApiCalls.RATING_SORT_ORDER);
-
-        }
-
-        return null;
     }
 
     @Override
@@ -142,7 +160,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         moviesAdapter.swapCursor(null);
     }
 
-   public LoaderManager.LoaderCallbacks<ArrayList<MoviesEntry>> moviesLoaderCallbacks =
+    public LoaderManager.LoaderCallbacks<ArrayList<MoviesEntry>> moviesLoaderCallbacks =
             new LoaderManager.LoaderCallbacks<ArrayList<MoviesEntry>>() {
                 @Override
                 public Loader<ArrayList<MoviesEntry>> onCreateLoader(int id, Bundle args) {
@@ -151,12 +169,21 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
                 @Override
                 public void onLoadFinished(Loader<ArrayList<MoviesEntry>> loader, ArrayList<MoviesEntry> data) {
-
+                    moviesArrayAdapter = new MoviesArrayAdapter(data, getActivity());
+                    recyclerView.setAdapter(moviesArrayAdapter);
+                    if (mPosition != ListView.INVALID_POSITION) {
+                        // If we don't need to restart the loader, and there's a desired position to restore
+                        // to, do so now.
+                        recyclerView.smoothScrollToPosition(mPosition);
+                    }
 
                 }
 
                 @Override
                 public void onLoaderReset(Loader<ArrayList<MoviesEntry>> loader) {
+//                    moviesArrayAdapter = new MoviesArrayAdapter(null, getActivity());
+//                    moviesArrayAdapter.notifyDataSetChanged();
+                    recyclerView.setAdapter(null);
 
                 }
             };

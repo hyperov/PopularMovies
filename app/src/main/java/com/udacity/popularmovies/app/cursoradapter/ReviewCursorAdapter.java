@@ -15,11 +15,11 @@ import com.udacity.popularmovies.app.db.tables.ReviewsTable;
 /**
  * Created by DELL I7 on 2/9/2016.
  */
-public class ReviewAdapter extends CursorAdapter {
+public class ReviewCursorAdapter extends CursorAdapter {
 
     public Cursor cursor;
 
-    public ReviewAdapter(Context context, Cursor c, int flags) {
+    public ReviewCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         this.cursor = c;
     }

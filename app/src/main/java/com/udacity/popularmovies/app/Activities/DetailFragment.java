@@ -19,8 +19,10 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.popularmovies.app.R;
-import com.udacity.popularmovies.app.cursoradapter.ReviewAdapter;
-import com.udacity.popularmovies.app.cursoradapter.TrailerAdapter;
+import com.udacity.popularmovies.app.arrayadapter.ReviewsArrayAdapter;
+import com.udacity.popularmovies.app.arrayadapter.TrailersArrayAdapter;
+import com.udacity.popularmovies.app.cursoradapter.ReviewCursorAdapter;
+import com.udacity.popularmovies.app.cursoradapter.TrailerCursorAdapter;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
 import com.udacity.popularmovies.app.db.tables.MoviesTable;
@@ -29,11 +31,14 @@ import com.udacity.popularmovies.app.db.tables.ReviewsTable;
 import com.udacity.popularmovies.app.db.tables.TrailersEntry;
 import com.udacity.popularmovies.app.db.tables.TrailersTable;
 import com.udacity.popularmovies.app.handler.JsonHandler;
+import com.udacity.popularmovies.app.loader.DetailFragmentLoaderReviews;
+import com.udacity.popularmovies.app.loader.DetailFragmentLoaderTrailers;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -51,8 +56,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     public String movie_id;
 
-    public TrailerAdapter trailerAdapter;
-    public ReviewAdapter reviewAdapter;
+    public TrailerCursorAdapter trailerCursorAdapter;
+    public ReviewCursorAdapter reviewCursorAdapter;
+
+    public TrailersArrayAdapter trailersArrayAdapter;
+    public ReviewsArrayAdapter reviewsArrayAdapter;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -79,11 +87,22 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         trailers = (ListView) rootView.findViewById(R.id.trailers);
         reviews = (ListView) rootView.findViewById(R.id.reviews);
 
-        reviewAdapter = new ReviewAdapter(getActivity(), null, 0);
-        trailerAdapter = new TrailerAdapter(getActivity(), null, 0);
+        reviewCursorAdapter = new ReviewCursorAdapter(getActivity(), null, 0);
+        trailerCursorAdapter = new TrailerCursorAdapter(getActivity(), null, 0);
 
-        trailers.setAdapter(trailerAdapter);
-        reviews.setAdapter(reviewAdapter);
+        trailersArrayAdapter = new TrailersArrayAdapter(getActivity(), R.layout.trailer_item, null);
+        reviewsArrayAdapter = new ReviewsArrayAdapter(getActivity(), R.layout.review_item, null);
+
+        if (ApiCalls.getSettings(getContext()) == getContext().getString(R.string.pref_movies_label_fav)) {
+            //favourites
+            trailers.setAdapter(trailerCursorAdapter);
+            reviews.setAdapter(reviewCursorAdapter);
+        } else {
+            trailers.setAdapter(trailersArrayAdapter);
+            reviews.setAdapter(reviewsArrayAdapter);
+        }
+
+
         trailers.setOnItemClickListener(this);
 
         return rootView;
@@ -92,9 +111,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        getLoaderManager().initLoader(DETAIL_REVIEW_LOADER, null, this);
-        getLoaderManager().initLoader(DETAIL_TRAILER_LOADER, null, this);
-        getLoaderManager().initLoader(DETAIL_MOVIE_LOADER, null, this);
+        if (ApiCalls.getSettings(getContext()) == getContext().getString(R.string.pref_movies_label_fav)) {
+            getLoaderManager().initLoader(DETAIL_REVIEW_LOADER, null, this);
+            getLoaderManager().initLoader(DETAIL_TRAILER_LOADER, null, this);
+            getLoaderManager().initLoader(DETAIL_MOVIE_LOADER, null, this);
+        } else {
+            getLoaderManager().initLoader(DETAIL_REVIEW_LOADER, null, reviewsLoaderCallbacks);
+            getLoaderManager().initLoader(DETAIL_TRAILER_LOADER, null, trailersLoaderCallbacks);
+        }
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -229,10 +253,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 Picasso.with(getActivity()).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movie.column_poster).into(poster);
                 break;
             case DETAIL_REVIEW_LOADER:
-                reviewAdapter.swapCursor(data);
+                reviewCursorAdapter.swapCursor(data);
                 break;
             case DETAIL_TRAILER_LOADER:
-                trailerAdapter.swapCursor(data);
+                trailerCursorAdapter.swapCursor(data);
                 break;
         }
 
@@ -242,9 +266,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         if (loader.getId() == DETAIL_REVIEW_LOADER)
-            reviewAdapter.swapCursor(null);
+            reviewCursorAdapter.swapCursor(null);
         if (loader.getId() == DETAIL_TRAILER_LOADER)
-            trailerAdapter.swapCursor(null);
+            trailerCursorAdapter.swapCursor(null);
     }
 
     @Override
@@ -255,4 +279,45 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         String trailerFullUrl = ApiCalls.YOUTUBE_BASE_URL + trailersEntry.column_trailer;
 
     }
+
+    public LoaderManager.LoaderCallbacks<ArrayList<ReviewsEntry>> reviewsLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<ArrayList<ReviewsEntry>>() {
+                @Override
+                public Loader<ArrayList<ReviewsEntry>> onCreateLoader(int id, Bundle args) {
+                    return new DetailFragmentLoaderReviews(getActivity());
+                }
+
+                @Override
+                public void onLoadFinished(Loader<ArrayList<ReviewsEntry>> loader, ArrayList<ReviewsEntry> data) {
+                    reviewsArrayAdapter = new ReviewsArrayAdapter(getActivity(), R.layout.review_item, data);
+                    reviewsArrayAdapter.notifyDataSetChanged();
+                    reviews.setAdapter(reviewsArrayAdapter);
+
+                }
+
+                @Override
+                public void onLoaderReset(Loader<ArrayList<ReviewsEntry>> loader) {
+                    reviewsArrayAdapter.clear();
+                }
+            };
+
+    public LoaderManager.LoaderCallbacks<ArrayList<TrailersEntry>> trailersLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<ArrayList<TrailersEntry>>() {
+                @Override
+                public Loader<ArrayList<TrailersEntry>> onCreateLoader(int id, Bundle args) {
+                    return new DetailFragmentLoaderTrailers(getActivity());
+                }
+
+                @Override
+                public void onLoadFinished(Loader<ArrayList<TrailersEntry>> loader, ArrayList<TrailersEntry> data) {
+                    trailersArrayAdapter = new TrailersArrayAdapter(getActivity(), R.layout.trailer_item, data);
+                    trailersArrayAdapter.notifyDataSetChanged();
+                    trailers.setAdapter(trailersArrayAdapter);
+                }
+
+                @Override
+                public void onLoaderReset(Loader<ArrayList<TrailersEntry>> loader) {
+                    trailersArrayAdapter.clear();
+                }
+            };
 }

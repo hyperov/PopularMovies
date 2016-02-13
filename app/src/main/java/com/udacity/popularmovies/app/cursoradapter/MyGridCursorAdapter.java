@@ -37,7 +37,6 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
             super(view);
             view.setOnClickListener(this);
             recycleItemImageView = (ImageView) view.findViewById(R.id.recycle_image_view);
-//            recycleItemImageView.setOnClickListener(this);
         }
 
         @Override
@@ -45,7 +44,7 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
 
             if (itemCursor != null) {
                 ((MainFragment.Callback) recycleItemImageView.getContext())
-                        .onItemSelected(movie.column_movie_id);
+                        .onItemSelected(movie.column_movie_id, null);
             }
 
             MainFragment.mPosition = itemCursor.getPosition();

@@ -21,10 +21,8 @@ public class MainFragmentLoaderMovies extends android.support.v4.content.AsyncTa
         super(context);
     }
 
-    @Override
-    protected void onStartLoading() {
-        forceLoad();
-    }
+
+
 
     @Override
     public ArrayList<MoviesEntry> loadInBackground() {

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +17,6 @@ import android.widget.Toast;
 
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.api.ApiCalls;
-import com.udacity.popularmovies.app.sync.PopularMoviesSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements MainFragment.Callback {
 
@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
             getSupportActionBar().setElevation(0f);
         }
 
-        if (isNetworkAvailable() && ApiCalls.getMovies(this) != null)
-            PopularMoviesSyncAdapter.initializeSyncAdapter(this);
+//        if (isNetworkAvailable() && ApiCalls.getMovies(this) != null)
+//            PopularMoviesSyncAdapter.initializeSyncAdapter(this);
 
     }
 
@@ -93,23 +93,23 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     @Override
     protected void onResume() {
         super.onResume();
-        String order = ApiCalls.getSettings(this);
-        // update if setting changes
-        if (order != null && !order.equals(mOrder) && order != getString(R.string.pref_movies_label_fav)) {
-            MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
-            // update the movies in main fragment
-            if (mainFragment != null) {
-                if (isNetworkAvailable())
-                    PopularMoviesSyncAdapter.syncImmediately(this);
-                mainFragment.restartCursorLoader();
-            }
-            DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-            // update the location in our second pane using the fragment manager
-            if (detailFragment != null) {
-                detailFragment.restartCursorLoader();
-            }
-            mOrder = order;
-        }
+//        String order = ApiCalls.getSettings(this);
+//        // update if setting changes
+//        if (order != null && !order.equals(mOrder) && order != getString(R.string.pref_movies_label_fav)) {
+//            MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
+//            // update the movies in main fragment
+//            if (mainFragment != null) {
+//                if (isNetworkAvailable())
+//                    PopularMoviesSyncAdapter.syncImmediately(this);
+//                mainFragment.restartCursorLoader();
+//            }
+//            DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+//            // update the location in our second pane using the fragment manager
+//            if (detailFragment != null) {
+//                detailFragment.restartCursorLoader();
+//            }
+//            mOrder = order;
+//        }
     }
 
     /**
@@ -125,14 +125,17 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     }
 
     @Override
-    public void onItemSelected(String movieId) {
+    public void onItemSelected(String movieId, Parcelable movieEntry) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle args = new Bundle();
-            args.putString(DetailedActivity.MOVIE_ID_TAG, movieId);
-
+            if (ApiCalls.getSettings(this) == getString(R.string.pref_movies_label_fav)) {
+                args.putString(DetailedActivity.MOVIE_ID_TAG, movieId);
+            } else {
+                args.putParcelable(DetailedActivity.MOVIE_ID_TAG, movieEntry);
+            }
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(args);
 
@@ -140,8 +143,13 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
                     .replace(R.id.movies_detail_container, fragment, DETAILFRAGMENT_TAG)
                     .commit();
         } else {
-            Intent intent = new Intent(this, DetailedActivity.class)
-                    .putExtra(DetailedActivity.MOVIE_ID_TAG, movieId);
+            Intent intent = new Intent(this, DetailedActivity.class);
+            if (ApiCalls.getSettings(this) == getString(R.string.pref_movies_label_fav)) {
+                intent.putExtra(DetailedActivity.MOVIE_ID_TAG, movieId);
+            } else {
+                intent.putExtra(DetailedActivity.MOVIE_ID_TAG, movieEntry);
+
+            }
             startActivity(intent);
         }
 

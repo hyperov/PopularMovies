@@ -74,7 +74,7 @@ public class ApiCalls {
         if (getSettings(context) != context.getString(R.string.pref_movies_label_fav))
             return BASE_API_CALL_MOVIE + getSettings(context);
 
-        //setting
+        //favourites
         return null;
 
     }

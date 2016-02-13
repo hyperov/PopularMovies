@@ -1,4 +1,4 @@
-package com.udacity.popularmovies.app.data;
+package com.udacity.popularmovies.app.provider;
 
 import ckm.simple.sql_provider.UpgradeScript;
 import ckm.simple.sql_provider.annotation.ProviderConfig;

@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by DELL I7 on 2/9/2016.
  */
-public class TrailerAdapter extends CursorAdapter {
+public class TrailerCursorAdapter extends CursorAdapter {
     Cursor cursor;
 
     public class ViewHolder {
@@ -32,7 +32,7 @@ public class TrailerAdapter extends CursorAdapter {
 
     }
 
-    public TrailerAdapter(Context context, Cursor c, int flags) {
+    public TrailerCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         this.cursor = c;
     }
