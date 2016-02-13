@@ -19,8 +19,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.popularmovies.app.R;
-import com.udacity.popularmovies.app.adapter.ReviewAdapter;
-import com.udacity.popularmovies.app.adapter.TrailerAdapter;
+import com.udacity.popularmovies.app.cursoradapter.ReviewAdapter;
+import com.udacity.popularmovies.app.cursoradapter.TrailerAdapter;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
 import com.udacity.popularmovies.app.db.tables.MoviesTable;

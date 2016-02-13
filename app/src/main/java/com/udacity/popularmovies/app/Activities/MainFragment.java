@@ -17,9 +17,13 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.udacity.popularmovies.app.R;
-import com.udacity.popularmovies.app.adapter.MyGridCursorAdapter;
+import com.udacity.popularmovies.app.cursoradapter.MyGridCursorAdapter;
 import com.udacity.popularmovies.app.api.ApiCalls;
+import com.udacity.popularmovies.app.db.tables.MoviesEntry;
 import com.udacity.popularmovies.app.db.tables.MoviesTable;
+import com.udacity.popularmovies.app.loader.MainFragmentLoaderMovies;
+
+import java.util.ArrayList;
 
 /**
  * Created by DELL I7 on 1/28/2016.
@@ -137,4 +141,23 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onLoaderReset(Loader<Cursor> loader) {
         moviesAdapter.swapCursor(null);
     }
+
+   public LoaderManager.LoaderCallbacks<ArrayList<MoviesEntry>> moviesLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<ArrayList<MoviesEntry>>() {
+                @Override
+                public Loader<ArrayList<MoviesEntry>> onCreateLoader(int id, Bundle args) {
+                    return new MainFragmentLoaderMovies(getActivity());
+                }
+
+                @Override
+                public void onLoadFinished(Loader<ArrayList<MoviesEntry>> loader, ArrayList<MoviesEntry> data) {
+
+
+                }
+
+                @Override
+                public void onLoaderReset(Loader<ArrayList<MoviesEntry>> loader) {
+
+                }
+            };
 }

@@ -1,4 +1,4 @@
-package com.udacity.popularmovies.app.adapter;
+package com.udacity.popularmovies.app.cursoradapter;
 
 
 /*
