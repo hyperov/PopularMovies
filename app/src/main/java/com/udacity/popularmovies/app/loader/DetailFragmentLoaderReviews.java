@@ -18,21 +18,19 @@ import java.util.ArrayList;
  */
 public class DetailFragmentLoaderReviews extends AsyncTaskLoader<ArrayList<ReviewsEntry>> {
 
-    public DetailFragmentLoaderReviews(Context context) {
+    String movieId;
+
+    public DetailFragmentLoaderReviews(Context context, String movieId) {
         super(context);
+        ApiCalls.API_CALL_MOVIE_ID = movieId;
     }
 
-    @Override
-    protected void onStartLoading() {
-        forceLoad();
-    }
 
     @Override
     public ArrayList<ReviewsEntry> loadInBackground() {
 
-        JsonHandler handler = new JsonHandler();
         ArrayList<ReviewsEntry> reviewsEntryArrayList = new ArrayList<>();
-
+        JsonHandler handler = new JsonHandler();
         String jsonReviews = handler.getJsonString(ApiCalls.getApiCallReviews());
         JSONObject reviewObject = null;
         try {

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.udacity.popularmovies.app.Activities.DetailFragment;
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.db.tables.TrailersEntry;
 
@@ -36,6 +37,8 @@ public class TrailersArrayAdapter extends ArrayAdapter<TrailersEntry> {
         ViewHolder viewHolder = new ViewHolder(convertView);
 
         viewHolder.trailerName.setText(trailersEntry.column_trailer_name);
+
+        DetailFragment.trailerIntentText=trailersEntryArrayList.get(0).column_trailer;
 
 
         return convertView;

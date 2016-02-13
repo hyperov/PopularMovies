@@ -56,6 +56,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         moviesAdapter = new MyGridCursorAdapter(getActivity(), null);
+        moviesArrayAdapter = new MoviesArrayAdapter(new ArrayList<MoviesEntry>(), getActivity());
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
@@ -66,7 +67,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             //favourites
             recyclerView.setAdapter(moviesAdapter);
         } else {
-            recyclerView.setAdapter(null);
+            recyclerView.setAdapter(moviesArrayAdapter);
         }
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the

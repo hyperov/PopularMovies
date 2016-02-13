@@ -3,6 +3,7 @@ package com.udacity.popularmovies.app.loader;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
+import com.udacity.popularmovies.app.Activities.DetailFragment;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.TrailersEntry;
 import com.udacity.popularmovies.app.handler.JsonHandler;
@@ -18,14 +19,11 @@ import java.util.ArrayList;
  */
 public class DetailFragmentLoaderTrailers extends AsyncTaskLoader<ArrayList<TrailersEntry>> {
 
-    public DetailFragmentLoaderTrailers(Context context) {
+    public DetailFragmentLoaderTrailers(Context context, String movieId) {
         super(context);
+        ApiCalls.API_CALL_MOVIE_ID = movieId;
     }
 
-    @Override
-    protected void onStartLoading() {
-        forceLoad();
-    }
 
     @Override
     public ArrayList<TrailersEntry> loadInBackground() {
@@ -43,7 +41,7 @@ public class DetailFragmentLoaderTrailers extends AsyncTaskLoader<ArrayList<Trai
             for (int v = 0; v < trailerResults.length(); v++) {
                 JSONObject trailerItem = trailerResults.getJSONObject(v);
 
-
+                DetailFragment.trailerIntentText = trailerItem.getString("key");
                 TrailersEntry trailer = new TrailersEntry(ApiCalls.API_CALL_MOVIE_ID
                         , trailerItem.getString("key"), trailerItem.getString("name"));
 

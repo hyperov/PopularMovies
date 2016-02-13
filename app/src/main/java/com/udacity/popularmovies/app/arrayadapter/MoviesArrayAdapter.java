@@ -67,10 +67,12 @@ public class MoviesArrayAdapter extends RecyclerView.Adapter<MoviesArrayAdapter.
 
         @Override
         public void onClick(View v) {
-            if (moviesEntry != null) {
-                ((MainFragment.Callback) v.getContext())
-                        .onItemSelected(null, moviesEntry);
-            }
+
+            ViewHolder viewHolder = (ViewHolder) v.getTag();
+
+            ((MainFragment.Callback) v.getContext())
+                    .onItemSelected(null, moviesEntryArrayList.get(viewHolder.getAdapterPosition()));
+
 
             MainFragment.mPosition = moviesEntryArrayList.indexOf(moviesEntry);
         }
