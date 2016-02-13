@@ -18,9 +18,7 @@ import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
 import com.udacity.popularmovies.app.db.tables.MoviesTable;
-import com.udacity.popularmovies.app.db.tables.ReviewsEntry;
 import com.udacity.popularmovies.app.db.tables.ReviewsTable;
-import com.udacity.popularmovies.app.db.tables.TrailersEntry;
 import com.udacity.popularmovies.app.db.tables.TrailersTable;
 import com.udacity.popularmovies.app.handler.JsonHandler;
 
@@ -60,6 +58,27 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
             int y = getContext().getContentResolver().delete(MoviesTable.CONTENT_URI, "1", null);
         }
         MoviesCursor.close();
+        //delete old reviews
+        Cursor reviewsCursor = getContext().getContentResolver().query(ReviewsTable.CONTENT_URI, null, null
+                , null, null);
+
+        //cursor has results
+        if (reviewsCursor.moveToFirst()) {
+            int m = getContext().getContentResolver().delete(ReviewsTable.CONTENT_URI,
+                    null, null);
+        }
+        reviewsCursor.close();
+        //delete pld trailers
+        Cursor TrailersCursor = getContext().getContentResolver()
+                .query(TrailersTable.CONTENT_URI, null, null, null, null);
+
+        //cursor has results
+        if (TrailersCursor.moveToFirst()) {
+            int k = getContext().getContentResolver().delete(TrailersTable.CONTENT_URI,
+                    null, null);
+        }
+        TrailersCursor.close();
+
         // cursor is null,insert review
 
         JsonHandler handler = new JsonHandler();
@@ -89,85 +108,85 @@ public class PopularMoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                 /**********************************************************************************************/
                 //parse trailers and reviews only if detail fragment exist
 //                if (MainActivity.mTwoPane) {
-                    Cursor reviewsCursor = getContext().getContentResolver()
-                            .query(ReviewsTable.CONTENT_URI, null, ReviewsTable.FIELD_MOVIE_ID + "=?"
-                                    , new String[]{ApiCalls.API_CALL_MOVIE_ID}, null);
+//                    Cursor reviewsCursor = getContext().getContentResolver()
+//                            .query(ReviewsTable.CONTENT_URI, null, ReviewsTable.FIELD_MOVIE_ID + "=?"
+//                                    , new String[]{ApiCalls.API_CALL_MOVIE_ID}, null);
+//
+//                    //cursor has results
+//                    if (reviewsCursor.moveToFirst()) {
+//                        int m = getContext().getContentResolver().delete(ReviewsTable.CONTENT_URI,
+//                                ReviewsTable.FIELD_MOVIE_ID + "=?", new String[]{ApiCalls.API_CALL_MOVIE_ID});
+//                    }
+//                    reviewsCursor.close();
+                // cursor is null,insert review
 
-                    //cursor has results
-                    if (reviewsCursor.moveToFirst()) {
-                        int m = getContext().getContentResolver().delete(ReviewsTable.CONTENT_URI,
-                                ReviewsTable.FIELD_MOVIE_ID + "=?", new String[]{ApiCalls.API_CALL_MOVIE_ID});
-                    }
-                    reviewsCursor.close();
-                    // cursor is null,insert review
-
-                    //json parsing for reviews
-                    String jsonReviews = handler.getJsonString(ApiCalls.getApiCallReviews());
-                    JSONObject reviewObject = new JSONObject(jsonReviews);
-
-                    JSONArray reviewResults = reviewObject.getJSONArray("results");
-
-                    Vector<ContentValues> reviewsVector = new Vector<ContentValues>(reviewResults.length());
-
-                    for (int k = 0; k < reviewResults.length(); k++) {
-                        JSONObject reviewItem = reviewResults.getJSONObject(k);
-
-
-                        ReviewsEntry review = new ReviewsEntry(ApiCalls.API_CALL_MOVIE_ID
-                                , reviewItem.getString("author"), reviewItem.getString("content"));
-
-                        //add reviews content values to vector
-                        reviewsVector.add(ReviewsTable.getContentValues(review, false));
-                    }
-
-                    if (reviewsVector.size() > 0) {
-                        ContentValues[] cvrArray = new ContentValues[reviewsVector.size()];
-                        reviewsVector.toArray(cvrArray);
-                        getContext().getContentResolver().bulkInsert(ReviewsTable.CONTENT_URI, cvrArray);
-                    }
-
-
-                    /***********************************************************************************************/
-                    Cursor TrailersCursor = getContext().getContentResolver()
-                            .query(TrailersTable.CONTENT_URI, null, ReviewsTable.FIELD_MOVIE_ID + "=?",
-                                    new String[]{ApiCalls.API_CALL_MOVIE_ID}, null);
-
-                    //cursor has results
-                    if (TrailersCursor.moveToFirst()) {
-                        int k = getContext().getContentResolver().delete(TrailersTable.CONTENT_URI,
-                                ReviewsTable.FIELD_MOVIE_ID + "=?",
-                                new String[]{ApiCalls.API_CALL_MOVIE_ID});
-                    }
-                    TrailersCursor.close();
-                    // cursor is null,insert review
-
-                    //json parsing for trailers
-                    String jsonTrailers = handler.getJsonString(ApiCalls.getApiCallTrailers());
-                    JSONObject trailerObject = new JSONObject(jsonTrailers);
-
-                    JSONArray trailerResults = trailerObject.getJSONArray("results");
-
-                    Vector<ContentValues> trailersVector = new Vector<ContentValues>(trailerResults.length());
-
-                    for (int v = 0; v < trailerResults.length(); v++) {
-                        JSONObject trailerItem = trailerResults.getJSONObject(v);
+                //json parsing for reviews
+//                String jsonReviews = handler.getJsonString(ApiCalls.getApiCallReviews());
+//                JSONObject reviewObject = new JSONObject(jsonReviews);
+//
+//                JSONArray reviewResults = reviewObject.getJSONArray("results");
+//
+//                Vector<ContentValues> reviewsVector = new Vector<ContentValues>(reviewResults.length());
+//
+//                for (int k = 0; k < reviewResults.length(); k++) {
+//                    JSONObject reviewItem = reviewResults.getJSONObject(k);
+//
+//
+//                    ReviewsEntry review = new ReviewsEntry(ApiCalls.API_CALL_MOVIE_ID
+//                            , reviewItem.getString("author"), reviewItem.getString("content"));
+//
+//                    //add reviews content values to vector
+//                    reviewsVector.add(ReviewsTable.getContentValues(review, false));
+//                }
+//
+//                if (reviewsVector.size() > 0) {
+//                    ContentValues[] cvrArray = new ContentValues[reviewsVector.size()];
+//                    reviewsVector.toArray(cvrArray);
+//                    getContext().getContentResolver().bulkInsert(ReviewsTable.CONTENT_URI, cvrArray);
+//                }
 
 
-                        TrailersEntry trailer = new TrailersEntry(ApiCalls.API_CALL_MOVIE_ID
-                                , trailerItem.getString("key"), trailerItem.getString("name"));
+                /***********************************************************************************************/
+//                    Cursor TrailersCursor = getContext().getContentResolver()
+//                            .query(TrailersTable.CONTENT_URI, null, ReviewsTable.FIELD_MOVIE_ID + "=?",
+//                                    new String[]{ApiCalls.API_CALL_MOVIE_ID}, null);
+//
+//                    //cursor has results
+//                    if (TrailersCursor.moveToFirst()) {
+//                        int k = getContext().getContentResolver().delete(TrailersTable.CONTENT_URI,
+//                                ReviewsTable.FIELD_MOVIE_ID + "=?",
+//                                new String[]{ApiCalls.API_CALL_MOVIE_ID});
+//                    }
+//                    TrailersCursor.close();
+                // cursor is null,insert review
 
-                        //add reviews content values to vector
-                        trailersVector.add(TrailersTable.getContentValues(trailer, false));
-                    }
+                //json parsing for trailers
+//                String jsonTrailers = handler.getJsonString(ApiCalls.getApiCallTrailers());
+//                JSONObject trailerObject = new JSONObject(jsonTrailers);
+//
+//                JSONArray trailerResults = trailerObject.getJSONArray("results");
+//
+//                Vector<ContentValues> trailersVector = new Vector<ContentValues>(trailerResults.length());
+//
+//                for (int v = 0; v < trailerResults.length(); v++) {
+//                    JSONObject trailerItem = trailerResults.getJSONObject(v);
+//
+//
+//                    TrailersEntry trailer = new TrailersEntry(ApiCalls.API_CALL_MOVIE_ID
+//                            , trailerItem.getString("key"), trailerItem.getString("name"));
+//
+//                    //add reviews content values to vector
+//                    trailersVector.add(TrailersTable.getContentValues(trailer, false));
+//                }
+//
+//                if (trailersVector.size() > 0) {
+//                    ContentValues[] cvtArray = new ContentValues[trailersVector.size()];
+//                    trailersVector.toArray(cvtArray);
+//                    getContext().getContentResolver().bulkInsert(TrailersTable.CONTENT_URI, cvtArray);
+//                }
 
-                    if (trailersVector.size() > 0) {
-                        ContentValues[] cvtArray = new ContentValues[trailersVector.size()];
-                        trailersVector.toArray(cvtArray);
-                        getContext().getContentResolver().bulkInsert(TrailersTable.CONTENT_URI, cvtArray);
-                    }
 
-
-                    /***********************************************************************************************/
+                /***********************************************************************************************/
 //                }
             }
 
