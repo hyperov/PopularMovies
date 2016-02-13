@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.udacity.popularmovies.app.R;
+import com.udacity.popularmovies.app.api.ApiCalls;
 
 public class DetailedActivity extends AppCompatActivity {
 
@@ -18,8 +19,13 @@ public class DetailedActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
 
             Bundle arguments = new Bundle();
-            arguments.putString(MOVIE_ID_TAG,
-                    getIntent().getExtras().getString(MOVIE_ID_TAG));
+            if (ApiCalls.getSettings(this) == getString(R.string.pref_movies_label_fav)) {
+                arguments.putString(MOVIE_ID_TAG,
+                        getIntent().getExtras().getString(MOVIE_ID_TAG));
+            } else {
+                arguments.putParcelable(MOVIE_ID_TAG,
+                        getIntent().getExtras().getParcelable(MOVIE_ID_TAG));
+            }
 
 
             DetailFragment fragment = new DetailFragment();
