@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@android:color/holo_red_dark"
+    android:background="@android:color/transparent"
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:fontFamily="sans-serif-condensed"
         android:gravity="left"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        tools:text="author"
-
-        android:id="@+id/author"
+        android:textColor="@android:color/holo_red_dark"
         android:textSize="20sp"
-        android:textColor="@android:color/holo_red_light" />
+        tools:text="author" />
 
     <TextView
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed"
         android:gravity="left"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        tools:text="content"
+        android:textColor="@android:color/holo_red_light"
         android:textSize="15sp"
-        android:id="@+id/content"
-        android:textColor="@android:color/black" />
+        android:background="@android:color/transparent"
+        tools:text="content" />
 
 </LinearLayout>

@@ -8,7 +8,8 @@
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:measureAllChildren="true">
 
 
         <RelativeLayout
@@ -49,9 +50,10 @@
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:layout_toRightOf="@+id/imageView"
+                android:fontFamily="sans-serif-condensed"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/colorPrimary"
-                tools:text="Medium Text" />
+                tools:text="condensed" />
 
             <TextView
                 android:id="@+id/rating"
@@ -64,6 +66,7 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:layout_toEndOf="@+id/imageView"
                 android:layout_toRightOf="@+id/imageView"
+                android:fontFamily="sans-serif-condensed"
                 android:text="@string/rating"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/colorPrimary" />
@@ -75,6 +78,7 @@
                 android:layout_alignTop="@id/rating"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_toRightOf="@+id/rating"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/colorPrimary"
                 tools:text="number" />
@@ -86,6 +90,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_below="@+id/imageView"
                 android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:fontFamily="sans-serif-condensed"
                 android:text="@string/plot"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/colorPrimary"
@@ -98,6 +103,7 @@
                 android:layout_alignLeft="@+id/plot"
                 android:layout_below="@+id/plot"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:fontFamily="sans-serif-light"
                 android:textColor="@android:color/black"
                 tools:text="the plot" />
 
@@ -108,22 +114,23 @@
                 android:layout_alignLeft="@+id/plotsubject"
                 android:layout_below="@+id/plotsubject"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:fontFamily="sans-serif-condensed"
+                android:text="Trailer"
                 android:textColor="@color/colorPrimary"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="Trailer" />
+                android:textStyle="bold" />
 
-            <ListView
+            <com.udacity.popularmovies.app.customviews.StaticHeightListView
 
                 android:id="@+id/trailers"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/trailer"
                 android:layout_below="@+id/trailer"
-                android:dividerHeight="1dp"
-                android:divider="@android:color/black"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:background="@android:color/holo_blue_light" />
+                android:background="@android:color/transparent"
+                android:divider="@android:color/black"
+                android:dividerHeight="1dp" />
 
             <TextView
                 android:id="@+id/review"
@@ -132,20 +139,24 @@
                 android:layout_alignLeft="@+id/trailers"
                 android:layout_below="@+id/trailers"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:fontFamily="sans-serif-condensed"
+                android:text="User Reviews"
                 android:textColor="@color/colorPrimary"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="User Reviews" />
+                android:textStyle="bold" />
 
-            <ListView
+            <com.udacity.popularmovies.app.customviews.StaticHeightListView
                 android:id="@+id/reviews"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/review"
                 android:layout_below="@+id/review"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="@android:color/holo_blue_light"
                 android:divider="@android:drawable/list_selector_background"
+                android:scrollbarSize="2dp"
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbars="vertical"
 
 
                 />

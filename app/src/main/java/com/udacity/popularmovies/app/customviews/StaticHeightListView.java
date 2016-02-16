@@ -1,7 +1,6 @@
 package com.udacity.popularmovies.app.customviews;
 
 import android.content.Context;
-import android.support.v4.view.NestedScrollingChildHelper;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ListAdapter;
@@ -11,11 +10,9 @@ import android.widget.ListView;
  * Created by DELL I7 on 2/12/2016.
  */
 public class StaticHeightListView extends ListView {
-    NestedScrollingChildHelper nestedScrollingChildHelper;
 
     public StaticHeightListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-//        nestedScrollingChildHelper=new NestedScrollingChildHelper()
     }
 
     @Override
