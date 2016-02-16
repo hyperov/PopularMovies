@@ -5,15 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.udacity.popularmovies.app.Activities.MainActivity"
+    tools:context="com.udacity.popularmovies.app.activities.MainActivity"
     tools:showIn="@layout/activity_main">
 
     <fragment
         android:id="@+id/fragment_main"
-        android:name="com.udacity.popularmovies.app.Activities.MainFragment"
+        android:name="com.udacity.popularmovies.app.activities.MainFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.udacity.popularmovies.app.Activities.MainFragment"
+        tools:context="com.udacity.popularmovies.app.activities.MainFragment"
         tools:layout="@android:layout/list_content" />
 
 </RelativeLayout>

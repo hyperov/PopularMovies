@@ -49,31 +49,18 @@ public class ReviewCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+
+        cursor.moveToPosition(cursor.getPosition());
+        ReviewsEntry reviewItem = ReviewsTable.getRow(cursor, false);
+
         ViewHolder viewHolder = (ViewHolder) view.getTag();
-
-        ReviewsEntry reviewItem = ReviewsTable.getRow(cursor, true);
-        int i = cursor.getPosition();
-//        List<ReviewsEntry> reviewsEntryList = ReviewsTable.getRows(cursor, true);
-//        ReviewsEntry reviewItem = reviewsEntryList.get(cursor.getPosition());
-
         viewHolder.author.setText(reviewItem.column_author);
         viewHolder.content.setText(reviewItem.column_review);
 
-    }
+//        if (!cursor.moveToNext())
+//            cursor.close();
 
-//    @Override
-//    public int getCount() {
-//        if (cursor != null)
-//            return getCursor().getCount();
-//        return 0;
-//    }
-//
-//    @Override
-//    public Cursor getCursor() {
-//        if (cursor != null)
-//            return cursor;
-//        return null;
-//    }
+    }
 
 
 }

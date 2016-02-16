@@ -1,4 +1,4 @@
-package com.udacity.popularmovies.app.Activities;
+package com.udacity.popularmovies.app.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -93,23 +93,21 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     @Override
     protected void onResume() {
         super.onResume();
-//        String order = ApiCalls.getSettings(this);
-//        // update if setting changes
-//        if (order != null && !order.equals(mOrder) && order != getString(R.string.pref_movies_label_fav)) {
-//            MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
-//            // update the movies in main fragment
-//            if (mainFragment != null) {
-//                if (isNetworkAvailable())
-//                    PopularMoviesSyncAdapter.syncImmediately(this);
-//                mainFragment.restartCursorLoader();
-//            }
-//            DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-//            // update the location in our second pane using the fragment manager
-//            if (detailFragment != null) {
-//                detailFragment.restartCursorLoader();
-//            }
-//            mOrder = order;
-//        }
+        String order = ApiCalls.getSettings(this);
+        // update if setting changes
+        if (order != null && !order.equals(mOrder)) {
+            MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
+            // update the movies in main fragment
+            if (mainFragment != null) {
+                mainFragment.restartLoader();
+            }
+            DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+            // update the location in our second pane using the fragment manager
+            if (detailFragment != null) {
+                detailFragment.restartLoader();
+            }
+            mOrder = order;
+        }
     }
 
     /**
@@ -131,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle args = new Bundle();
-            if (ApiCalls.getSettings(this) == getString(R.string.pref_movies_label_fav)) {
+            if (ApiCalls.getSettings(this).equals( getString(R.string.pref_movies_label_fav))) {
                 args.putString(DetailedActivity.MOVIE_ID_TAG, movieId);
             } else {
                 args.putParcelable(DetailedActivity.MOVIE_ID_TAG, movieEntry);
@@ -144,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
                     .commit();
         } else {
             Intent intent = new Intent(this, DetailedActivity.class);
-            if (ApiCalls.getSettings(this) == getString(R.string.pref_movies_label_fav)) {
+            if (ApiCalls.getSettings(this).equals( getString(R.string.pref_movies_label_fav))) {
                 intent.putExtra(DetailedActivity.MOVIE_ID_TAG, movieId);
             } else {
                 intent.putExtra(DetailedActivity.MOVIE_ID_TAG, movieEntry);

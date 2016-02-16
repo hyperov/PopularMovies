@@ -1,4 +1,4 @@
-package com.udacity.popularmovies.app.Activities;
+package com.udacity.popularmovies.app.activities;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -63,7 +63,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
 
-        if (ApiCalls.getSettings(getContext()) == getContext().getString(R.string.pref_movies_label_fav)) {
+
+        if (ApiCalls.getSettings(getContext()).equals(getContext().getString(R.string.pref_movies_label_fav))) {
             //favourites
             recyclerView.setAdapter(moviesAdapter);
         } else {
@@ -84,7 +85,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        if (ApiCalls.getSettings(getContext()) == getContext().getString(R.string.pref_movies_label_fav)) {
+        if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))) {
             getLoaderManager().initLoader(MOVIES_LOADER, null, this);
         } else {
             getLoaderManager().initLoader(1, null, moviesLoaderCallbacks).forceLoad();
@@ -102,8 +103,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         super.onSaveInstanceState(outState);
     }
 
-    public void restartCursorLoader() {
-        getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
+    public void restartLoader() {
+        if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))) {
+            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
+        } else {
+            getLoaderManager().restartLoader(1, null, moviesLoaderCallbacks).forceLoad();
+        }
     }
 
     public interface Callback {
@@ -116,30 +121,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String pref = ApiCalls.getSettings(getActivity());
-
-        //pref is favourites
-//        if (pref == getActivity().getString(R.string.pref_movies_label_fav)) {
-//
-//            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
-//                    ApiCalls.FAV_SELECT, new String[]{ApiCalls.FAV_SELECT_ARGS_true}, null);
-//
-//            //pref is popular movies
-//        } else if (pref == getActivity().getString(R.string.pref_movies_label_popular_entry)) {
-//
-//            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
-//                    null, null, ApiCalls.POPULARITY_SORT_ORDER);
-//
-//            //pref is high rating movies
-//        } else if (pref == getActivity().getString(R.string.pref_movies_label_rating_entry)) {
-//
-//            return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
-//                    null, null, ApiCalls.RATING_SORT_ORDER);
-//
-//        }
 
         return new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
-                ApiCalls.FAV_SELECT, new String[]{ApiCalls.FAV_SELECT_ARGS_true}, null);
+                null, null, null);
 
     }
 
@@ -147,11 +131,13 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         moviesAdapter.swapCursor(data);
+        recyclerView.setAdapter(moviesAdapter);
         if (mPosition != ListView.INVALID_POSITION) {
             // If we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.
             recyclerView.smoothScrollToPosition(mPosition);
         }
+
 
     }
 
@@ -182,8 +168,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
                 @Override
                 public void onLoaderReset(Loader<ArrayList<MoviesEntry>> loader) {
-//                    moviesArrayAdapter = new MoviesArrayAdapter(null, getActivity());
-//                    moviesArrayAdapter.notifyDataSetChanged();
+
                     recyclerView.setAdapter(null);
 
                 }

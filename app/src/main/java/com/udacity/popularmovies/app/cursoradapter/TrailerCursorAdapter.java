@@ -12,30 +12,26 @@ import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.db.tables.TrailersEntry;
 import com.udacity.popularmovies.app.db.tables.TrailersTable;
 
-import java.util.List;
-
 /**
  * Created by DELL I7 on 2/9/2016.
  */
 public class TrailerCursorAdapter extends CursorAdapter {
-    Cursor cursor;
-
-    public class ViewHolder {
-        public final TextView trailerName;
-
-        public ViewHolder(View itemView) {
-
-            trailerName = (TextView) itemView.findViewById(R.id.trailer_text_view);
-
-        }
-
-
-    }
+    public Cursor cursor;
 
     public TrailerCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         this.cursor = c;
     }
+
+    public class ViewHolder {
+        public TextView trailerName;
+
+        public ViewHolder(View itemView) {
+
+            trailerName = (TextView) itemView.findViewById(R.id.trailer_text_view);
+        }
+    }
+
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -48,28 +44,18 @@ public class TrailerCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+
+        cursor.moveToPosition(cursor.getPosition());
+        TrailersEntry trailerItem = TrailersTable.getRow(cursor, false);
+
         ViewHolder viewHolder = (ViewHolder) view.getTag();
-
-        List<TrailersEntry> trailersEntryList = TrailersTable.getRows(cursor, true);
-        TrailersEntry trailerItem = trailersEntryList.get(cursor.getPosition());
-
         viewHolder.trailerName.setText(trailerItem.column_trailer_name);
 
+//        if (!cursor.moveToNext())
+//            cursor.close();
 
     }
 
-    @Override
-    public int getCount() {
-        if (cursor != null)
-            return getCursor().getCount();
-        return 0;
-    }
 
-    @Override
-    public Cursor getCursor() {
-        if (cursor != null)
-            return cursor;
-        return null;
-    }
 }
 

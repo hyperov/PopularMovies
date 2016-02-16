@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.udacity.popularmovies.app.Activities.MainFragment;
+import com.udacity.popularmovies.app.activities.MainFragment;
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
@@ -22,10 +22,10 @@ import com.udacity.popularmovies.app.db.tables.MoviesTable;
 public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorAdapter.ViewHolder> {
 
     public Cursor itemCursor;
-    public MoviesEntry movie;
 
     public MyGridCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
+
 
     }
 
@@ -43,8 +43,12 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
         public void onClick(View v) {
 
             if (itemCursor != null) {
+                ViewHolder viewHolder = (ViewHolder) v.getTag();
+                itemCursor.moveToPosition(viewHolder.getAdapterPosition());
+
+                MoviesEntry moviesEntry = MoviesTable.getRow(itemCursor, false);
                 ((MainFragment.Callback) recycleItemImageView.getContext())
-                        .onItemSelected(movie.column_movie_id, null);
+                        .onItemSelected(moviesEntry.column_movie_id, null);
             }
 
             MainFragment.mPosition = itemCursor.getPosition();
@@ -64,9 +68,9 @@ public class MyGridCursorAdapter extends CursorRecyclerViewAdapter<MyGridCursorA
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
-        itemCursor = cursor;
 
-        movie = MoviesTable.getRow(cursor, false);
+        itemCursor = cursor;
+        MoviesEntry movie = MoviesTable.getRow(cursor, false);
         Picasso.with(viewHolder.itemView.getContext()).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movie.column_poster).
                 into(viewHolder.recycleItemImageView);
 

@@ -3,7 +3,7 @@ package com.udacity.popularmovies.app.loader;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.udacity.popularmovies.app.Activities.DetailFragment;
+import com.udacity.popularmovies.app.activities.DetailFragment;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.TrailersEntry;
 import com.udacity.popularmovies.app.handler.JsonHandler;

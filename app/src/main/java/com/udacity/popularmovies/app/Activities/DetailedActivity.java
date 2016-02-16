@@ -1,4 +1,4 @@
-package com.udacity.popularmovies.app.Activities;
+package com.udacity.popularmovies.app.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,16 +17,15 @@ public class DetailedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detailed);
 
         if (savedInstanceState == null) {
-
             Bundle arguments = new Bundle();
-            if (ApiCalls.getSettings(this) == getString(R.string.pref_movies_label_fav)) {
+
+            if (ApiCalls.getSettings(this).equals(getString(R.string.pref_movies_label_fav))) {
                 arguments.putString(MOVIE_ID_TAG,
                         getIntent().getExtras().getString(MOVIE_ID_TAG));
             } else {
                 arguments.putParcelable(MOVIE_ID_TAG,
                         getIntent().getExtras().getParcelable(MOVIE_ID_TAG));
             }
-
 
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(arguments);

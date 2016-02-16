@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -27,18 +27,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.DetailedActivity">
+        <activity android:name=".activities.DetailedActivity"
+
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.udacity.popularmovies.app.Activities.MainActivity" />
+                android:value="com.udacity.popularmovies.app.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".Activities.SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".Activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.udacity.popularmovies.app.Activities.MainActivity" />
+                android:value="com.udacity.popularmovies.app.activities.MainActivity" />
         </activity>
 
         <service android:name=".sync.PopularMoviesAuthenticatorService">

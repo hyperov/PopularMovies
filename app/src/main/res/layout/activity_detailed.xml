@@ -4,5 +4,5 @@
     android:id="@+id/movies_detail_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.udacity.popularmovies.app.Activities.DetailedActivityy"
+    tools:context="com.udacity.popularmovies.app.activities.DetailedActivityy"
     tools:ignore="MergeRootFrame" />

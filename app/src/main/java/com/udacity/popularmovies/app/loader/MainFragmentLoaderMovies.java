@@ -22,8 +22,6 @@ public class MainFragmentLoaderMovies extends android.support.v4.content.AsyncTa
     }
 
 
-
-
     @Override
     public ArrayList<MoviesEntry> loadInBackground() {
         JsonHandler handler = new JsonHandler();
@@ -41,12 +39,12 @@ public class MainFragmentLoaderMovies extends android.support.v4.content.AsyncTa
             ApiCalls.RESULTS_PER_PAGE = results.length();
             for (int i = 0; i < results.length(); i++) {
                 JSONObject movieObject = results.getJSONObject(i);
-               // ApiCalls.API_CALL_MOVIE_ID = movieObject.getString("id");
+                // ApiCalls.API_CALL_MOVIE_ID = movieObject.getString("id");
 
                 MoviesEntry movie = new MoviesEntry(movieObject.getString("id"), movieObject.getString("title"),
                         movieObject.getString("poster_path"), movieObject.getString("overview"),
                         movieObject.getDouble("vote_average"), movieObject.getString("release_date"),
-                        "f", movieObject.getDouble("popularity"));
+                        "t", movieObject.getDouble("popularity"));
 
                 //add content values to vector
 //                moviesVector.add(MoviesTable.getContentValues(movie, false));

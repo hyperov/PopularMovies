@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.udacity.popularmovies.app.Activities.DetailFragment;
+import com.udacity.popularmovies.app.activities.DetailFragment;
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.db.tables.TrailersEntry;
 
