@@ -2,8 +2,11 @@ package com.udacity.popularmovies.app.activities;
 
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -50,13 +53,13 @@ import java.util.ArrayList;
  */
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
-    private static final int DETAIL_MOVIE_LOADER = 0;
+    private static final int DETAIL_MOVIE_LOADER = 3;
     private static final int DETAIL_REVIEW_LOADER = 1;
     private static final int DETAIL_TRAILER_LOADER = 2;
 
     public static boolean loaderFinished = false;
 
-    TextView title, plot, release, rating;
+    TextView title, plot, release, rating, trailerTv, reviewTv;
     ImageView poster;
     ListView trailers, reviews;
     FloatingActionButton fav;
@@ -116,6 +119,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             } else {
                 movie = arguments.getParcelable(DetailedActivity.MOVIE_ID_TAG);
             }
+
+
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -126,75 +131,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         rating = (TextView) rootView.findViewById(R.id.ratingnumber);
         poster = (ImageView) rootView.findViewById(R.id.imageView);
 
+        trailerTv = (TextView) rootView.findViewById(R.id.trailer);
+        reviewTv = (TextView) rootView.findViewById(R.id.review);
+
         fav = (FloatingActionButton) rootView.findViewById(R.id.fav);
         fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean movieExist = false;
-                ContentValues[] cvArray;
-                Cursor movieCursor = getActivity().getContentResolver().query(MoviesTable.CONTENT_URI,
-                        null, MoviesTable.FIELD_MOVIE_ID + "=?",
-                        new String[]{movie.column_movie_id}, null);
-                if (movieCursor.moveToFirst()) {
-                    movieExist = true;
-
-                }
-                movieCursor.close();
-                if (movieExist) {
-
-                    /**************delete movieItem,trailers,reviews*************/
-                    getActivity().getContentResolver().delete(MoviesTable.CONTENT_URI,
-                            MoviesTable.FIELD_MOVIE_ID + "=?", new String[]{movie.column_movie_id});
-
-                    getActivity().getContentResolver().delete(ReviewsTable.CONTENT_URI,
-                            MoviesTable.FIELD_MOVIE_ID + "=?", new String[]{movie.column_movie_id});
-
-                    getActivity().getContentResolver().delete(TrailersTable.CONTENT_URI,
-                            MoviesTable.FIELD_MOVIE_ID + "=?", new String[]{movie.column_movie_id});
-
-                    Toast.makeText(getActivity(), "deleted from Favourites", Toast.LENGTH_SHORT).show();
-
-                    if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav)))
-                        getActivity().finish();
-
-                } else {
-
-                    /**********insert movieItem,trailers,reviews*****/
-
-                    //movieIem :
-                    ContentValues cv = MoviesTable.getContentValues(movie, false);
-                    getActivity().getContentResolver().insert(MoviesTable.CONTENT_URI, cv);
-
-                    //reviews
-                    ArrayList<ContentValues> reviewsContentValues = new ArrayList<>();
-                    for (int i = 0; i < reviewsEntries.size(); i++) {
-                        ReviewsEntry reviewItem = reviewsEntries.get(i);
-                        ContentValues reviewValues = ReviewsTable.getContentValues(reviewItem, false);
-                        reviewsContentValues.add(reviewValues);
-                    }
-                    cvArray = new ContentValues[reviewsContentValues.size()];
-                    reviewsContentValues.toArray(cvArray);
-                    getActivity().getContentResolver().bulkInsert(ReviewsTable.CONTENT_URI, cvArray);
-
-                    //trailers
-                    ArrayList<ContentValues> trailersContentValues = new ArrayList<>();
-                    for (int i = 0; i < trailersEntries.size(); i++) {
-                        TrailersEntry trailerItem = trailersEntries.get(i);
-                        ContentValues trailerValues = TrailersTable.getContentValues(trailerItem, false);
-                        trailersContentValues.add(trailerValues);
-                    }
-                    cvArray = new ContentValues[trailersContentValues.size()];
-                    trailersContentValues.toArray(cvArray);
-                    getActivity().getContentResolver().bulkInsert(TrailersTable.CONTENT_URI, cvArray);
-
-                    Toast.makeText(getActivity(), "added to Favourites", Toast.LENGTH_SHORT).show();
-
-
-                }
-
+                addMoviesToFav();
             }
         });
-
 
         trailers = (ListView) rootView.findViewById(R.id.trailers);
         reviews = (ListView) rootView.findViewById(R.id.reviews);
@@ -217,12 +163,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             trailers.setAdapter(trailersArrayAdapter);
             reviews.setAdapter(reviewsArrayAdapter);
 
-            title.setText(movie.column_movie_name);
-            plot.setText(movie.column_plot);
-            release.setText(movie.column_release_date);
-            rating.setText(movie.column_user_rating + "");
+            if (movie != null) {
+                title.setText(movie.column_movie_name);
+                plot.setText(movie.column_plot);
+                release.setText(movie.column_release_date);
+                rating.setText(movie.column_user_rating + "");
 
-            Picasso.with(getActivity()).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movie.column_poster).into(poster);
+                Picasso.with(getActivity()).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movie.column_poster).into(poster);
+            }
         }
 
 
@@ -231,16 +179,98 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         return rootView;
     }
 
+    public void addMoviesToFav() {
+        boolean movieExist = false;
+        ContentValues[] cvArray;
+        Cursor movieCursor = getActivity().getContentResolver().query(MoviesTable.CONTENT_URI,
+                null, MoviesTable.FIELD_MOVIE_ID + "=?",
+                new String[]{movie.column_movie_id}, null);
+        if (movieCursor.moveToFirst()) {
+            movieExist = true;
+
+        }
+        movieCursor.close();
+        if (movieExist) {
+
+            /**************delete movieItem,trailers,reviews*************/
+            getActivity().getContentResolver().delete(MoviesTable.CONTENT_URI,
+                    MoviesTable.FIELD_MOVIE_ID + "=?", new String[]{movie.column_movie_id});
+
+            getActivity().getContentResolver().delete(ReviewsTable.CONTENT_URI,
+                    MoviesTable.FIELD_MOVIE_ID + "=?", new String[]{movie.column_movie_id});
+
+            getActivity().getContentResolver().delete(TrailersTable.CONTENT_URI,
+                    MoviesTable.FIELD_MOVIE_ID + "=?", new String[]{movie.column_movie_id});
+
+            Toast.makeText(getActivity(), "deleted from Favourites", Toast.LENGTH_SHORT).show();
+
+            if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))
+                    && MainActivity.mTwoPane == false)
+                getActivity().finish();
+
+        } else {
+
+            /**********insert movieItem,trailers,reviews*****/
+
+            //movieIem :
+            ContentValues cv = MoviesTable.getContentValues(movie, false);
+            getActivity().getContentResolver().insert(MoviesTable.CONTENT_URI, cv);
+
+            if (reviewsEntries != null) {
+                //reviews
+                ArrayList<ContentValues> reviewsContentValues = new ArrayList<>();
+                for (int i = 0; i < reviewsEntries.size(); i++) {
+                    ReviewsEntry reviewItem = reviewsEntries.get(i);
+                    ContentValues reviewValues = ReviewsTable.getContentValues(reviewItem, false);
+                    reviewsContentValues.add(reviewValues);
+                }
+
+                cvArray = new ContentValues[reviewsContentValues.size()];
+                reviewsContentValues.toArray(cvArray);
+                getActivity().getContentResolver().bulkInsert(ReviewsTable.CONTENT_URI, cvArray);
+            }
+
+            if (trailersEntries != null) {
+                //trailers
+                ArrayList<ContentValues> trailersContentValues = new ArrayList<>();
+                for (int i = 0; i < trailersEntries.size(); i++) {
+                    TrailersEntry trailerItem = trailersEntries.get(i);
+                    ContentValues trailerValues = TrailersTable.getContentValues(trailerItem, false);
+                    trailersContentValues.add(trailerValues);
+                }
+
+                cvArray = new ContentValues[trailersContentValues.size()];
+                trailersContentValues.toArray(cvArray);
+                getActivity().getContentResolver().bulkInsert(TrailersTable.CONTENT_URI, cvArray);
+            }
+            Toast.makeText(getActivity(), "added to Favourites", Toast.LENGTH_SHORT).show();
+
+
+        }
+
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))) {
-            getLoaderManager().initLoader(DETAIL_REVIEW_LOADER, null, this);
-            getLoaderManager().initLoader(DETAIL_TRAILER_LOADER, null, this);
-            getLoaderManager().initLoader(DETAIL_MOVIE_LOADER, null, this);
+            if (movie_id != null) {
+                getLoaderManager().initLoader(DETAIL_REVIEW_LOADER, null, this);
+                getLoaderManager().initLoader(DETAIL_TRAILER_LOADER, null, this);
+                getLoaderManager().initLoader(DETAIL_MOVIE_LOADER, null, this);
+            }
         } else {
-            getLoaderManager().initLoader(DETAIL_REVIEW_LOADER, null, reviewsLoaderCallbacks).forceLoad();
-            getLoaderManager().initLoader(DETAIL_TRAILER_LOADER, null, trailersLoaderCallbacks).forceLoad();
+            if (movie != null) {
+                getLoaderManager().initLoader(DETAIL_REVIEW_LOADER, null, reviewsLoaderCallbacks).forceLoad();
+                getLoaderManager().initLoader(DETAIL_TRAILER_LOADER, null, trailersLoaderCallbacks).forceLoad();
+            }
         }
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(createShareForecastIntent(trailerIntentText));
@@ -248,80 +278,95 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         super.onActivityCreated(savedInstanceState);
     }
 
-    public void restartLoader() {
-        if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))) {
-            getLoaderManager().restartLoader(DETAIL_MOVIE_LOADER, null, this);
-            getLoaderManager().restartLoader(DETAIL_REVIEW_LOADER, null, this);
-            getLoaderManager().restartLoader(DETAIL_TRAILER_LOADER, null, this);
-        } else {
-            getLoaderManager().restartLoader(DETAIL_REVIEW_LOADER, null, reviewsLoaderCallbacks).forceLoad();
-            getLoaderManager().restartLoader(DETAIL_TRAILER_LOADER, null, trailersLoaderCallbacks).forceLoad();
-
-        }
-
-    }
+//    public void restartLoader() {
+//        if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))) {
+//            getLoaderManager().restartLoader(DETAIL_MOVIE_LOADER, null, this);
+//            getLoaderManager().restartLoader(DETAIL_REVIEW_LOADER, null, this);
+//            getLoaderManager().restartLoader(DETAIL_TRAILER_LOADER, null, this);
+//        } else {
+//            if (isNetworkAvailable()) {
+//                getLoaderManager().restartLoader(DETAIL_REVIEW_LOADER, null, reviewsLoaderCallbacks).forceLoad();
+//                getLoaderManager().restartLoader(DETAIL_TRAILER_LOADER, null, trailersLoaderCallbacks).forceLoad();
+//            }
+//
+//        }
+//        getActivity().getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.movies_detail_container, new DetailFragment(), MainActivity.DETAILFRAGMENT_TAG)
+//                .commit();
+//
+//    }
 
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        CursorLoader cursorLoader = null;
-        switch (id) {
-            case DETAIL_MOVIE_LOADER:
+        if (movie_id != null) {
+            CursorLoader cursorLoader = null;
+            switch (id) {
+                case DETAIL_MOVIE_LOADER:
 
 
-                cursorLoader = new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
-                        MoviesTable.FIELD_MOVIE_ID + "=?",
-                        new String[]{movie_id}, null);
+                    cursorLoader = new CursorLoader(getActivity(), MoviesTable.CONTENT_URI, null,
+                            MoviesTable.FIELD_MOVIE_ID + "=?",
+                            new String[]{movie_id}, null);
 
-                break;
-            case DETAIL_REVIEW_LOADER:
+                    break;
+                case DETAIL_REVIEW_LOADER:
 
-                cursorLoader = new CursorLoader(getActivity(), ReviewsTable.CONTENT_URI, null,
-                        MoviesTable.FIELD_MOVIE_ID + "=?", new String[]{movie_id}, null);
-                break;
-            case DETAIL_TRAILER_LOADER:
+                    cursorLoader = new CursorLoader(getActivity(), ReviewsTable.CONTENT_URI, null,
+                            MoviesTable.FIELD_MOVIE_ID + "=?", new String[]{movie_id}, null);
+                    break;
+                case DETAIL_TRAILER_LOADER:
 
-                cursorLoader = new CursorLoader(getActivity(), TrailersTable.CONTENT_URI, null,
-                        MoviesTable.FIELD_MOVIE_ID + "=?", new String[]{movie_id}, null);
+                    cursorLoader = new CursorLoader(getActivity(), TrailersTable.CONTENT_URI, null,
+                            MoviesTable.FIELD_MOVIE_ID + "=?", new String[]{movie_id}, null);
 
-                break;
+                    break;
+            }
+
+            return cursorLoader;
         }
-
-        return cursorLoader;
+        return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        loaderFinished = true;
+        if (data != null) {
+            loaderFinished = true;
 
-        switch (loader.getId()) {
-            case DETAIL_MOVIE_LOADER:
-                movie = MoviesTable.getRow(data, true);
+            switch (loader.getId()) {
+                case DETAIL_MOVIE_LOADER:
+                    movie = MoviesTable.getRow(data, true);
 
-                title.setText(movie.column_movie_name);
-                plot.setText(movie.column_plot);
-                release.setText(movie.column_release_date);
-                rating.setText(movie.column_user_rating + "");
+                    title.setText(movie.column_movie_name);
+                    plot.setText(movie.column_plot);
+                    release.setText(movie.column_release_date);
+                    rating.setText(movie.column_user_rating + "");
 
-                Picasso.with(getActivity()).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movie.column_poster).into(poster);
-                break;
-            case DETAIL_REVIEW_LOADER:
+                    Picasso.with(getActivity()).load(ApiCalls.BASE_IMAGE_URL_AND_WIDTH + movie.column_poster).into(poster);
+                    break;
+                case DETAIL_REVIEW_LOADER:
 
-                reviewCursorAdapter.swapCursor(data);
-                reviews.setAdapter(reviewCursorAdapter);
+                    reviewTv.setVisibility(View.VISIBLE);
+                    reviewCursorAdapter.swapCursor(data);
+                    reviews.setAdapter(reviewCursorAdapter);
 
+                    fav.setVisibility(View.VISIBLE);
 
-                break;
-            case DETAIL_TRAILER_LOADER:
-                trailerCursorAdapter.swapCursor(data);
-                trailers.setAdapter(trailerCursorAdapter);
+                    break;
+                case DETAIL_TRAILER_LOADER:
 
-                break;
-        }
-        if (mShareActionProvider != null) {
-            mShareActionProvider.setShareIntent(createShareForecastIntent(trailerIntentText));
+                    trailerTv.setVisibility(View.VISIBLE);
+
+                    trailerCursorAdapter.swapCursor(data);
+                    trailers.setAdapter(trailerCursorAdapter);
+
+                    break;
+            }
+            if (mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(createShareForecastIntent(trailerIntentText));
+            }
         }
 
 
@@ -370,17 +415,22 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             new LoaderManager.LoaderCallbacks<ArrayList<ReviewsEntry>>() {
                 @Override
                 public Loader<ArrayList<ReviewsEntry>> onCreateLoader(int id, Bundle args) {
-                    return new DetailFragmentLoaderReviews(getActivity(), movie.column_movie_id);
+                    if (movie != null)
+                        return new DetailFragmentLoaderReviews(getActivity(), movie.column_movie_id);
+                    return null;
                 }
 
                 @Override
                 public void onLoadFinished(Loader<ArrayList<ReviewsEntry>> loader, ArrayList<ReviewsEntry> data) {
-                    reviewsArrayAdapter = new ReviewsArrayAdapter(getActivity(), R.layout.review_item, data);
-                    reviewsEntries = data;
-                    reviews.setAdapter(reviewsArrayAdapter);
-                    loaderFinished = true;
 
-
+                    if (data != null && loader != null) {
+                        reviewsArrayAdapter = new ReviewsArrayAdapter(getActivity(), R.layout.review_item, data);
+                        reviewsEntries = data;
+                        reviews.setAdapter(reviewsArrayAdapter);
+                        loaderFinished = true;
+                        fav.setVisibility(View.VISIBLE);
+                        reviewTv.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 @Override
@@ -394,17 +444,22 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             new LoaderManager.LoaderCallbacks<ArrayList<TrailersEntry>>() {
                 @Override
                 public Loader<ArrayList<TrailersEntry>> onCreateLoader(int id, Bundle args) {
-                    return new DetailFragmentLoaderTrailers(getActivity(), movie.column_movie_id);
+                    if (movie != null)
+                        return new DetailFragmentLoaderTrailers(getActivity(), movie.column_movie_id);
+                    return null;
                 }
 
                 @Override
                 public void onLoadFinished(Loader<ArrayList<TrailersEntry>> loader, ArrayList<TrailersEntry> data) {
-                    trailersArrayAdapter = new TrailersArrayAdapter(getActivity(), R.layout.trailer_item, data);
-                    trailersEntries = data;
-                    trailers.setAdapter(trailersArrayAdapter);
-                    loaderFinished = true;
-                    if (mShareActionProvider != null) {
-                        mShareActionProvider.setShareIntent(createShareForecastIntent(trailerIntentText));
+                    if (data != null && loader != null && data.size() != 0) {
+                        trailersArrayAdapter = new TrailersArrayAdapter(getActivity(), R.layout.trailer_item, data);
+                        trailersEntries = data;
+                        trailers.setAdapter(trailersArrayAdapter);
+                        loaderFinished = true;
+                        trailerTv.setVisibility(View.VISIBLE);
+                        if (mShareActionProvider != null) {
+                            mShareActionProvider.setShareIntent(createShareForecastIntent(trailerIntentText));
+                        }
                     }
                 }
 

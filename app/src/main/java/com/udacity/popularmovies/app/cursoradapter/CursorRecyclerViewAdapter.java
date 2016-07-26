@@ -48,10 +48,10 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         mCursor = cursor;
         mDataValid = cursor != null;
         mRowIdColumn = mDataValid ? mCursor.getColumnIndex("_id") : -1;
-        mDataSetObserver = new NotifyingDataSetObserver();
+//        mDataSetObserver = new NotifyingDataSetObserver();
         mContentObserver = new NotifyingContentObserver();
         if (mCursor != null) {
-            mCursor.registerDataSetObserver(mDataSetObserver);
+//            mCursor.registerDataSetObserver(mDataSetObserver);
             mCursor.registerContentObserver(mContentObserver);
         }
     }
@@ -62,10 +62,8 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-//        if (mDataValid && mCursor != null) {
         if (mDataValid && mCursor != null) {
             return mCursor.getCount();
-//            return 20;
 
         }
         return 0;
@@ -120,16 +118,16 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         }
         Cursor oldCursor = mCursor;
         if (oldCursor != null) {
-            if (mDataSetObserver != null)
-                oldCursor.unregisterDataSetObserver(mDataSetObserver);
+//            if (mDataSetObserver != null)
+//                oldCursor.unregisterDataSetObserver(mDataSetObserver);
             if (mContentObserver != null)
                 oldCursor.unregisterContentObserver(mContentObserver);
         }
         mCursor = newCursor;
         if (mCursor != null) {
-            if (mDataSetObserver != null) {
-                mCursor.registerDataSetObserver(mDataSetObserver);
-            }
+//            if (mDataSetObserver != null) {
+//                mCursor.registerDataSetObserver(mDataSetObserver);
+//            }
             if (mContentObserver != null) {
                 mCursor.registerContentObserver(mContentObserver);
             }
@@ -145,22 +143,22 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         return oldCursor;
     }
 
-    private class NotifyingDataSetObserver extends DataSetObserver {
-        @Override
-        public void onChanged() {
-            super.onChanged();
-            mDataValid = true;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public void onInvalidated() {
-            super.onInvalidated();
-            mDataValid = false;
-            notifyDataSetChanged();
-            //There is no notifyDataSetInvalidated() method in RecyclerView.Adapter
-        }
-    }
+//    private class NotifyingDataSetObserver extends DataSetObserver {
+//        @Override
+//        public void onChanged() {
+//            super.onChanged();
+//            mDataValid = true;
+//            notifyDataSetChanged();
+//        }
+//
+//        @Override
+//        public void onInvalidated() {
+//            super.onInvalidated();
+//            mDataValid = false;
+//            notifyDataSetChanged();
+//            //There is no notifyDataSetInvalidated() method in RecyclerView.Adapter
+//        }
+//    }
 
     private class NotifyingContentObserver extends ContentObserver {
 

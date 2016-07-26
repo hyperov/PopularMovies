@@ -9,13 +9,13 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:measureAllChildren="true">
+        android:background="@android:color/holo_blue_light">
 
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/holo_blue_light"
+            android:layout_height="match_parent"
+
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
@@ -118,13 +118,14 @@
                 android:text="Trailer"
                 android:textColor="@color/colorPrimary"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <com.udacity.popularmovies.app.customviews.StaticHeightListView
 
                 android:id="@+id/trailers"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignLeft="@+id/trailer"
                 android:layout_below="@+id/trailer"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
@@ -143,21 +144,19 @@
                 android:text="User Reviews"
                 android:textColor="@color/colorPrimary"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <com.udacity.popularmovies.app.customviews.StaticHeightListView
                 android:id="@+id/reviews"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignLeft="@+id/review"
                 android:layout_below="@+id/review"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:background="@android:color/holo_blue_light"
-                android:divider="@android:drawable/list_selector_background"
-                android:scrollbarSize="2dp"
-                android:scrollbarStyle="insideOverlay"
-                android:scrollbars="vertical"
-
+                android:background="@android:color/transparent"
+                android:divider="@android:color/black"
+                android:dividerHeight="1dp"
 
                 />
 
@@ -172,6 +171,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/btn_star" />
+        android:src="@android:drawable/btn_star"
+        android:visibility="invisible" />
 
 </android.support.design.widget.CoordinatorLayout>

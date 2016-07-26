@@ -6,14 +6,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.api.ApiCalls;
@@ -24,31 +21,17 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     private String mOrder;
     //    private boolean mTwoPane;
     public static boolean mTwoPane;
-    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    public static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         mOrder = ApiCalls.getSettings(this);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_SHORT)
-                        .setAction("Action", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Toast.makeText(MainActivity.this, "so what is this", Toast.LENGTH_SHORT).show();
-                            }
-                        }).show();
-            }
-        });
 
         if (findViewById(R.id.movies_detail_container) != null) {
             // The detail container view will be present only in the large-screen layouts
@@ -58,18 +41,16 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            if (savedInstanceState == null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.movies_detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
-                        .commit();
-            }
+//            if (savedInstanceState == null) {
+//                getSupportFragmentManager().beginTransaction()
+//                        .replace(R.id.movies_detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
+//                        .commit();
+//            }
         } else {
             mTwoPane = false;
             getSupportActionBar().setElevation(0f);
         }
 
-//        if (isNetworkAvailable() && ApiCalls.getMovies(this) != null)
-//            PopularMoviesSyncAdapter.initializeSyncAdapter(this);
 
     }
 
@@ -94,20 +75,43 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     protected void onResume() {
         super.onResume();
         String order = ApiCalls.getSettings(this);
+
+
         // update if setting changes
         if (order != null && !order.equals(mOrder)) {
             MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
+
+            if (!isNetworkAvailable()) {
+                if (order.equals(getString(R.string.pref_movies_label_fav))) {
+                    mainFragment.connectivity.setVisibility(View.GONE);
+                } else {
+                    mainFragment.connectivity.setVisibility(View.VISIBLE);
+                }
+            } else {
+                mainFragment.connectivity.setVisibility(View.GONE);
+            }
             // update the movies in main fragment
             if (mainFragment != null) {
                 mainFragment.restartLoader();
             }
-            DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-            // update the location in our second pane using the fragment manager
-            if (detailFragment != null) {
-                detailFragment.restartLoader();
+            /*********************************************************/
+            if (findViewById(R.id.movies_detail_container) != null) {
+
+                DetailFragment detailFragment = (DetailFragment) getSupportFragmentManager().
+                        findFragmentByTag(DETAILFRAGMENT_TAG);
+
+                if (detailFragment != null)
+                    getSupportFragmentManager().beginTransaction().remove
+                            (detailFragment).commit();
+
+                // update the location in our second pane using the fragment manager
+//            if (detailFragment != null) {
+//                    detailFragment.restartLoader();
+
+
             }
-            mOrder = order;
         }
+        mOrder = order;
     }
 
     /**
@@ -115,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
      *
      * @return true if there is connection
      */
-    private boolean isNetworkAvailable() {
+
+    public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -129,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle args = new Bundle();
-            if (ApiCalls.getSettings(this).equals( getString(R.string.pref_movies_label_fav))) {
+            if (ApiCalls.getSettings(this).equals(getString(R.string.pref_movies_label_fav))) {
                 args.putString(DetailedActivity.MOVIE_ID_TAG, movieId);
             } else {
                 args.putParcelable(DetailedActivity.MOVIE_ID_TAG, movieEntry);
@@ -142,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
                     .commit();
         } else {
             Intent intent = new Intent(this, DetailedActivity.class);
-            if (ApiCalls.getSettings(this).equals( getString(R.string.pref_movies_label_fav))) {
+            if (ApiCalls.getSettings(this).equals(getString(R.string.pref_movies_label_fav))) {
                 intent.putExtra(DetailedActivity.MOVIE_ID_TAG, movieId);
             } else {
                 intent.putExtra(DetailedActivity.MOVIE_ID_TAG, movieEntry);

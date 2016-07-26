@@ -1,6 +1,9 @@
 package com.udacity.popularmovies.app.activities;
 
+import android.content.Context;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -16,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.udacity.popularmovies.app.R;
 import com.udacity.popularmovies.app.api.ApiCalls;
@@ -46,6 +50,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     //array adapter if not favourite
     public MoviesArrayAdapter moviesArrayAdapter;
 
+    //no connectivity
+    TextView connectivity;
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -55,13 +62,28 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        connectivity = (TextView) rootView.findViewById(R.id.no_connection);
+
+        if (!isNetworkAvailable() ){
+
+       if(!ApiCalls.getSettings(getContext()).equals(getContext().getString(R.string.pref_movies_label_fav))) {
+           connectivity.setVisibility(View.VISIBLE);
+       }else{
+           connectivity.setVisibility(View.GONE);
+       }
+        }
+
+
         moviesAdapter = new MyGridCursorAdapter(getActivity(), null);
         moviesArrayAdapter = new MoviesArrayAdapter(new ArrayList<MoviesEntry>(), getActivity());
 
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
+
 
 
         if (ApiCalls.getSettings(getContext()).equals(getContext().getString(R.string.pref_movies_label_fav))) {
@@ -69,6 +91,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             recyclerView.setAdapter(moviesAdapter);
         } else {
             recyclerView.setAdapter(moviesArrayAdapter);
+            recyclerView.setHasFixedSize(true);
         }
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the
@@ -88,7 +111,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))) {
             getLoaderManager().initLoader(MOVIES_LOADER, null, this);
         } else {
-            getLoaderManager().initLoader(1, null, moviesLoaderCallbacks).forceLoad();
+            if (isNetworkAvailable())
+                getLoaderManager().initLoader(1, null, moviesLoaderCallbacks).forceLoad();
 
         }
         super.onActivityCreated(savedInstanceState);
@@ -107,8 +131,16 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))) {
             getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
         } else {
-            getLoaderManager().restartLoader(1, null, moviesLoaderCallbacks).forceLoad();
+            if (isNetworkAvailable())
+                getLoaderManager().restartLoader(1, null, moviesLoaderCallbacks).forceLoad();
         }
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public interface Callback {
@@ -116,7 +148,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
          * Callback for when an item has been selected.
          */
 
-        public void onItemSelected(String movieId, Parcelable movieEntry);
+        void onItemSelected(String movieId, Parcelable movieEntry);
     }
 
     @Override
@@ -130,21 +162,25 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        moviesAdapter.swapCursor(data);
-        recyclerView.setAdapter(moviesAdapter);
-        if (mPosition != ListView.INVALID_POSITION) {
-            // If we don't need to restart the loader, and there's a desired position to restore
-            // to, do so now.
-            recyclerView.smoothScrollToPosition(mPosition);
+        if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))) {
+            moviesAdapter.swapCursor(data);
+            recyclerView.setAdapter(moviesAdapter);
+            if (mPosition != ListView.INVALID_POSITION) {
+                // If we don't need to restart the loader, and there's a desired position to restore
+                // to, do so now.
+                recyclerView.smoothScrollToPosition(mPosition);
+            }
         }
-
 
     }
 
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        moviesAdapter.swapCursor(null);
+        Cursor old = moviesAdapter.swapCursor(null);
+        if (old != null)
+            old.close();
+//        getLoaderManager().destroyLoader(loader.getId());
     }
 
     public LoaderManager.LoaderCallbacks<ArrayList<MoviesEntry>> moviesLoaderCallbacks =

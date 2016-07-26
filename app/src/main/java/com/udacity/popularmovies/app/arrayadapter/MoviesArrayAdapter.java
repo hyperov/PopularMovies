@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.udacity.popularmovies.app.activities.MainFragment;
 import com.udacity.popularmovies.app.R;
+import com.udacity.popularmovies.app.activities.MainFragment;
 import com.udacity.popularmovies.app.api.ApiCalls;
 import com.udacity.popularmovies.app.db.tables.MoviesEntry;
 
@@ -28,6 +28,7 @@ public class MoviesArrayAdapter extends RecyclerView.Adapter<MoviesArrayAdapter.
     public MoviesArrayAdapter(ArrayList<MoviesEntry> moviesEntryArrayList, Context context) {
         this.moviesEntryArrayList = moviesEntryArrayList;
         this.context = context;
+
     }
 
     @Override
@@ -68,14 +69,17 @@ public class MoviesArrayAdapter extends RecyclerView.Adapter<MoviesArrayAdapter.
         @Override
         public void onClick(View v) {
 
-            ViewHolder viewHolder = (ViewHolder) v.getTag();
-
-            ((MainFragment.Callback) v.getContext())
-                    .onItemSelected(null, moviesEntryArrayList.get(viewHolder.getAdapterPosition()));
+            sendData(v);
 
 
             MainFragment.mPosition = moviesEntryArrayList.indexOf(moviesEntry);
         }
     }
 
+    public void sendData(View v) {
+        ViewHolder viewHolder = (ViewHolder) v.getTag();
+        ((MainFragment.Callback) v.getContext())
+                .onItemSelected(null, moviesEntryArrayList.get(viewHolder.getAdapterPosition()));
+
+    }
 }
