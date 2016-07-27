@@ -69,8 +69,8 @@
     <string name="pref_movies_key">order_key</string>
     <string name="pref_movies_label_popular">Most popular</string>
     <string name="pref_movies_label_rating">High Rating</string>
-    <string name="pref_movies_label_popular_entry">popularity.desc</string>
-    <string name="pref_movies_label_rating_entry">vote_average.desc</string>
+    <string name="pref_movies_label_popular_entry">popular</string>
+    <string name="pref_movies_label_rating_entry">top_rated</string>
     <string name="pref_movies_label_fav">Favourites</string>
     <string name="pref_movies_label_fav_entry">Favourites</string>
     <string name="sync_account_type">app</string>
