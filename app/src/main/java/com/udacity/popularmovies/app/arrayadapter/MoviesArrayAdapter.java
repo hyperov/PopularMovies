@@ -72,7 +72,7 @@ public class MoviesArrayAdapter extends RecyclerView.Adapter<MoviesArrayAdapter.
             sendData(v);
 
 
-            MainFragment.mPosition = moviesEntryArrayList.indexOf(moviesEntry);
+//            MainFragment.mPosition = moviesEntryArrayList.indexOf(moviesEntry);
         }
     }
 
@@ -80,6 +80,6 @@ public class MoviesArrayAdapter extends RecyclerView.Adapter<MoviesArrayAdapter.
         ViewHolder viewHolder = (ViewHolder) v.getTag();
         ((MainFragment.Callback) v.getContext())
                 .onItemSelected(null, moviesEntryArrayList.get(viewHolder.getAdapterPosition()));
-
+        MainFragment.mPosition=viewHolder.getAdapterPosition();
     }
 }

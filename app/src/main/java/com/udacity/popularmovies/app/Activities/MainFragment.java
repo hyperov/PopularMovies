@@ -167,7 +167,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             if (mPosition != ListView.INVALID_POSITION) {
                 // If we don't need to restart the loader, and there's a desired position to restore
                 // to, do so now.
-                recyclerView.smoothScrollToPosition(mPosition);
+                recyclerView.getLayoutManager().scrollToPosition(mPosition);
             }
         }
 
@@ -196,7 +196,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                     if (mPosition != ListView.INVALID_POSITION) {
                         // If we don't need to restart the loader, and there's a desired position to restore
                         // to, do so now.
-                        recyclerView.smoothScrollToPosition(mPosition);
+//                        recyclerView.smoothScrollToPosition(mPosition);
+                        recyclerView.getLayoutManager().scrollToPosition(mPosition);
                     }
 
                 }
