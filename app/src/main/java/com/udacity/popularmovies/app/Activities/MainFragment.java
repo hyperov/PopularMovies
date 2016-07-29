@@ -66,13 +66,13 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         connectivity = (TextView) rootView.findViewById(R.id.no_connection);
 
-        if (!isNetworkAvailable() ){
+        if (!isNetworkAvailable()) {
 
-       if(!ApiCalls.getSettings(getContext()).equals(getContext().getString(R.string.pref_movies_label_fav))) {
-           connectivity.setVisibility(View.VISIBLE);
-       }else{
-           connectivity.setVisibility(View.GONE);
-       }
+            if (!ApiCalls.getSettings(getContext()).equals(getContext().getString(R.string.pref_movies_label_fav))) {
+                connectivity.setVisibility(View.VISIBLE);
+            } else {
+                connectivity.setVisibility(View.GONE);
+            }
         }
 
 
@@ -83,7 +83,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
-
 
 
         if (ApiCalls.getSettings(getContext()).equals(getContext().getString(R.string.pref_movies_label_fav))) {
