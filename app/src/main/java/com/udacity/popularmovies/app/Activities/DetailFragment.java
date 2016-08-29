@@ -204,9 +204,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             Toast.makeText(getActivity(), "deleted from Favourites", Toast.LENGTH_SHORT).show();
 
-            if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))
-                    && MainActivity.mTwoPane == false)
-                getActivity().finish();
+            if (ApiCalls.getSettings(getActivity()).equals(getString(R.string.pref_movies_label_fav))) {
+                if (!MainActivity.mTwoPane) {
+                    getActivity().finish();
+                } else {
+                    getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+                }
+            }
 
         } else {
 

@@ -36,7 +36,7 @@ public class MainFragmentLoaderMovies extends android.support.v4.content.AsyncTa
 //            Vector<ContentValues> moviesVector = new Vector<ContentValues>(results.length());
 
 
-            ApiCalls.RESULTS_PER_PAGE = results.length();
+//            ApiCalls.RESULTS_PER_PAGE = results.length();
             for (int i = 0; i < results.length(); i++) {
                 JSONObject movieObject = results.getJSONObject(i);
                 // ApiCalls.API_CALL_MOVIE_ID = movieObject.getString("id");

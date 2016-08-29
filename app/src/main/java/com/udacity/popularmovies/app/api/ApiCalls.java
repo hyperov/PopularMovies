@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.udacity.popularmovies.app.R;
-import com.udacity.popularmovies.app.db.tables.MoviesTable;
 
 
 /**
@@ -45,10 +44,10 @@ public class ApiCalls {
 
 
     // where select args for preference
-    public static final String FAV_SELECT_ARGS_false = "f";
-    public static final String FAV_SELECT_ARGS_true = "t";
-    public static final String POPULARITY_SORT_ORDER = MoviesTable.FIELD_POPULARITY + " DESC";
-    public static final String RATING_SORT_ORDER = MoviesTable.FIELD_USER_RATING + " DESC";
+//    public static final String FAV_SELECT_ARGS_false = "f";
+//    public static final String FAV_SELECT_ARGS_true = "t";
+//    public static final String POPULARITY_SORT_ORDER = MoviesTable.FIELD_POPULARITY + " DESC";
+//    public static final String RATING_SORT_ORDER = MoviesTable.FIELD_USER_RATING + " DESC";
 
     public static int RESULTS_PER_PAGE;
 
